@@ -1,0 +1,96 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "n_per_bin_requested": 60,
+  "n_total_pairs": 240,
+  "bins": {
+    "1-2": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.41,
+        "mean_false": 0.18419111023346582,
+        "mean_true": 0.22482100526491802
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.3686111111111111,
+        "mean_false": 0.1837838208768517,
+        "mean_true": 0.2637199893593788
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 0.5561111111111111,
+        "mean_false": -0.37236256450414656,
+        "mean_true": -0.3978904475768407
+      }
+    },
+    "3-10": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.5144444444444445,
+        "mean_false": 0.2592269246156017,
+        "mean_true": 0.25971358648190895
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.515,
+        "mean_false": 0.15362329790368676,
+        "mean_true": 0.17664464147140582
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 0.4725,
+        "mean_false": -0.4069949752340714,
+        "mean_true": -0.39946184468766055
+      }
+    },
+    "11-30": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.38222222222222224,
+        "mean_false": 0.25151378608619174,
+        "mean_true": 0.3526371527307977
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.3713888888888889,
+        "mean_false": 0.10106745230344434,
+        "mean_true": 0.14450823705022534
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 0.6,
+        "mean_false": -0.390387519945701,
+        "mean_true": -0.4788741447031498
+      }
+    },
+    "31-1000": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.3211111111111111,
+        "mean_false": 0.299632217331479,
+        "mean_true": 0.4323284133026997
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.3258333333333333,
+        "mean_false": 0.1198455405033504,
+        "mean_true": 0.1747783627981941
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 0.6758333333333333,
+        "mean_false": -0.43283304795622823,
+        "mean_true": -0.5474030877153079
+      }
+    }
+  },
+  "seconds": 83.42066311836243,
+  "auroc_by_prompt_order": {
+    "smaller_listed_first": {
+      "tf_gap": 0.0847701961671095,
+      "mean_logp": 0.9058171745152355
+    },
+    "larger_listed_first": {
+      "tf_gap": 0.840073368853175,
+      "mean_logp": 0.14656301860424492
+    }
+  },
+  "spearman_false_target_score_vs_abs_diff": {
+    "tf_gap": 0.21546132997244122,
+    "entropy_norm_gap": 0.07578567757787393,
+    "mean_logp": -0.10799136407523317
+  },
+  "note": "Targets in a pair share a prompt and differ only in which number is called larger. Prompt order is randomised per pair. Casing is normalised: an earlier version built true targets like 'fifty-two is larger than Fifty-one.' (lowercase start, capital mid-sentence) which gave AUROC exactly 0.0 in every bin and both orders (see *_BUGGY_casing.json). auroc_by_prompt_order shows any residual order effect."
+}

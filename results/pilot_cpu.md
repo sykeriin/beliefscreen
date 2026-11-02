@@ -4,7 +4,7 @@
 Only the paired insecure-vs-secure result (n=284 pairs) and the paired false-fact result (n=20 pairs)
 are large enough to read; everything marked ⚠ used 4–10 items per class and is noise. A full-size rerun
 was started but **died silently after P2** (no traceback; cause unknown, probably killed with the worker), so
-the ⚠ rows have not been replaced yet. Phase 2 (see `PLAN.md`) reruns them with resumable stages.
+the ⚠ rows have not been replaced yet. Phase 2 results (below) rerun the code experiment with localised scores; P3b/P4 were not rerun.
 
 None of this involves fine-tuning or an EM rate. It only asks whether the scores separate bad targets
 from good ones in the base model.
@@ -60,9 +60,66 @@ obvious next variant; (c) the pairs differ by more than the vulnerability, so `p
 correction. What it does show is that the score does not transfer from false facts to code for free, which is
 exactly the risk the plan flagged.
 
-## P3b — insecure vs educational framing (⚠ 10 pairs): not interpretable.
+## Phase 2 results (resumable scripts; raw outputs in `results/*.json`)
 
-## P4 — persona projection-difference baseline (⚠ 4 vs 4 per task): not interpretable (facts 0.56, code 0.81).
+### P3 revisited: token-localised scores, insecure vs secure code (284 unique prompt-matched pairs, max_len 768, none truncated)
+Script `scripts/phase2_code.py`. The pairs are **not minimal edits**: a median 40% of tokens (p10 9%, p90 69%) differ
+between the insecure and secure answer, so "differing tokens" is not a clean proxy for "the vulnerability".
 
-## Cost
-648 sequences scored in the P3 stage took 552 s (~0.85 s/sequence, max_len 768, batch 4, 4 CPU cores).
+Fraction of pairs where the insecure answer scores higher (50% = chance; Wilcoxon p in brackets):
+
+| score | Qwen2.5-0.5B | Qwen2.5-1.5B |
+|---|---|---|
+| mean-pooled tf_gap | 53.5% (0.42) | 56.7% (0.16) |
+| max-pooled gap, non-tied pairs only* | 8.1% vs 9.9% (0.36) | 14.4% vs 12.7% (0.35) |
+| top-5 mean gap | 48.2% (0.44) | 51.4% (0.58) |
+| top-10 mean gap | 47.5% (0.46) | 50.4% (0.97) |
+| **oracle**: mean gap over differing tokens only (uses the pair; diagnostic, not a screen) | 52.7% (0.23) | 55.1% (0.12) |
+| mean gap after regressing out log length | 53.5% (0.64) | 51.8% (0.37) |
+
+\*Max pooling ties in 82% (0.5B) / 73% (1.5B) of pairs because both answers usually open with the same token, so the raw
+percentages above are mostly ties, not wins for the secure answer.
+
+**Reading:** no detectable signal at either size under any pooling, including the oracle. The 1.5B point estimates are a
+little higher than 0.5B (oracle 55.1% vs 52.7%; 95% CI for 1.5B roughly 49-61%), which is in the direction the plan
+hoped for but is not significant and does not support a scaling claim. My pre-registered expectation for the oracle was
+55-65%; the observed values are at or below the bottom of that range and statistically indistinguishable from chance.
+Not shown above, because it is a selection artifact: differing tokens have higher gap than shared tokens *within* the
+insecure answer (60.6%, p=1e-7), but tokens that differ between two continuations are by construction less
+predictable than boilerplate both continuations share. The valid comparison is insecure-differing vs secure-differing,
+which is the oracle row.
+
+### Graded wrongness (`scripts/graded_wrongness.py`, 240 false/true pairs from Geometry-of-Truth `larger_than`)
+False target "X is larger than Y." (X < Y) vs true "Y is larger than X.", binned by |X - Y|; prompt number order randomised.
+AUROC false-vs-true (0.5 = no separation), tf_gap:
+
+| |X-Y| bin (n=60 each) | 0.5B | 1.5B |
+|---|---|---|
+| 1-2 | 0.41 | 0.79 |
+| 3-10 | 0.51 | 0.70 |
+| 11-30 | 0.38 | 0.60 |
+| 31+ | 0.32 | 0.45 |
+
+Spearman(false-target tf_gap, |X-Y|): 0.5B 0.22, 1.5B -0.02.
+By prompt order, 0.5B: AUROC 0.085 when the smaller number is listed first, 0.84 when the larger is listed first
+(1.5B: 0.71 / 0.56): the small model largely echoes whichever number the prompt lists first.
+
+**Reading: this does not replicate a graded-wrongness effect, and it does not refute one.** Conflict does not rise with
+wrongness here (1.5B is highest for the *smallest* differences). The construction is a poor proxy for the LASR setup
+(on-policy wrong answers graded by a judge) and is dominated by a prompt-order effect at 0.5B. Treat as inconclusive.
+
+### Correction to earlier intermediate claims
+Two earlier graded-wrongness outputs (`*_BUGGY_casing.json`) showed AUROC exactly 0.0 in every bin. I first attributed
+that to prompt-order bias; the actual cause was a bug in my target construction (true targets like
+"fifty-two is larger than Fifty-one." with wrong casing). The order effect is real (see above) but was not the cause.
+Those files are kept only as a record of the bug. Commit `a3ec5f2`'s message and the old filename say "order confounded";
+that wording is wrong.
+
+### Not rerun
+P3b (insecure vs educational framing) and P4 (persona projection-difference baseline) remain at 4-10 items per class from
+the smoke run and are **not interpretable**; the persona baseline needs its own layer sweep and >=60 items/class
+before it can serve as the RQ3 comparison.
+
+## Cost (4 CPU cores, fp32, batch 4)
+0.5B: ~0.7 s per scored sequence. 1.5B: ~2.0 s per sequence (24 pairs in ~95 s) when it has the CPU to itself; running two
+PyTorch jobs at once made the same job >10x slower (load average 8 on 4 cores).

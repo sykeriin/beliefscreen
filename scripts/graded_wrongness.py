@@ -44,12 +44,14 @@ def main():
             m = re.match(r"(.+) is larger than (.+)\.$", r.statement)
             if not m:
                 continue
-            x, y = m.groups()
+            low = lambda t: t[0].lower() + t[1:]
+            cap = lambda t: t[0].upper() + t[1:]
+            x, y = low(m.group(1)), low(m.group(2))  # CSV capitalises only the sentence-initial word: normalise
             flip = bool(rng.random() < 0.5)  # counterbalance the order numbers are listed in the prompt
             first, second = (y, x) if flip else (x, y)
             p = [{"role": "user", "content": f"Which is larger, {first} or {second}?"}]
-            F.append(Example(f"F:{r.Index}", p, f"{x} is larger than {y}."))
-            T.append(Example(f"T:{r.Index}", p, f"{y} is larger than {x}."))
+            F.append(Example(f"F:{r.Index}", p, f"{cap(x)} is larger than {y}."))
+            T.append(Example(f"T:{r.Index}", p, f"{cap(y)} is larger than {x}."))
             wrong.append(int(r.abs_diff)); flipped.append(flip)
     wrong, flipped = np.array(wrong), np.array(flipped)
     sm = ScoringModel(a.model, device="cpu")
@@ -73,9 +75,9 @@ def main():
             c: auroc(np.concatenate([dT[c][m], dF[c][m]]), y) for c in ("tf_gap", "mean_logp")}
     out["spearman_false_target_score_vs_abs_diff"] = {c: float(spearmanr(dF[c], wrong).statistic) for c in ("tf_gap", "entropy_norm_gap", "mean_logp")}
     out["note"] = ("Targets in a pair share a prompt and differ only in which number is called larger. "
-                   "Prompt order is randomised per pair. An earlier version always listed the smaller number first, "
-                   "which made the false answer an echo of the prompt order and gave AUROC 0.0 in every bin "
-                   "(see graded_wrongness_0.5B_ORDER_CONFOUNDED.json). auroc_by_prompt_order shows the residual order effect.")
+                   "Prompt order is randomised per pair. Casing is normalised: an earlier version built true targets "
+                   "like 'fifty-two is larger than Fifty-one.' (lowercase start, capital mid-sentence) which gave AUROC "
+                   "exactly 0.0 in every bin and both orders (see *_BUGGY_casing.json). auroc_by_prompt_order shows any residual order effect.")
     (ROOT / "results" / "graded_wrongness.json").write_text(json.dumps(out, indent=2))
     print(json.dumps(out, indent=1))
 
