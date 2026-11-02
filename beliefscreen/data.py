@@ -70,3 +70,26 @@ def load_truth_csv(path: str | Path) -> tuple[list[str], list[int]]:
     with Path(path).open() as f:
         rows = list(csv.DictReader(f))
     return [r["statement"] for r in rows], [int(r["label"]) for r in rows]
+
+
+_COLUMN_PAIRS = [("user", "assistant"), ("prompt", "completion"), ("prompt", "response"),
+                 ("question", "answer"), ("instruction", "output")]
+
+
+def load_examples(path: str | Path, limit: int | None = None, seed: int = 0, shuffle: bool = False) -> list[Example]:
+    """Load .jsonl (chat `messages` or prompt/completion) or .parquet/.csv with a recognised column pair."""
+    path = Path(path)
+    if path.suffix == ".jsonl":
+        return load_jsonl(path, limit=limit, seed=seed, shuffle=shuffle)
+    import pandas as pd
+    df = pd.read_parquet(path) if path.suffix == ".parquet" else pd.read_csv(path)
+    for u, a in _COLUMN_PAIRS:
+        if u in df.columns and a in df.columns:
+            break
+    else:
+        raise ValueError(f"{path}: no recognised column pair in {list(df.columns)}")
+    exs = [Example(id=f"{path.stem}:{i}", prompt=[{"role": "user", "content": str(r[u])}], target=str(r[a]),
+                   meta={"source": str(path)}) for i, r in df.iterrows()]
+    if shuffle:
+        random.Random(seed).shuffle(exs)
+    return exs[:limit] if limit else exs

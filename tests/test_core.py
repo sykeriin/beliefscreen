@@ -167,3 +167,25 @@ def test_logreg_probe_matches_sklearn_and_roundtrips(tmp_path):
     assert p.accuracy(X, y) > 0.9
     p.save(tmp_path / "p.json")
     np.testing.assert_allclose(TruthProbe.load(tmp_path / "p.json").p_true(X), p.p_true(X))
+
+
+def test_load_examples_formats(tmp_path):
+    from beliefscreen.data import load_examples
+    df = pd.DataFrame({"user": ["q1", "q2", "q3"], "assistant": ["a1", "a2", "a3"]})
+    df.to_csv(tmp_path / "x.csv", index=False)
+    df.to_parquet(tmp_path / "x.parquet")
+    for f in ("x.csv", "x.parquet"):
+        e = load_examples(tmp_path / f, limit=2)
+        assert len(e) == 2 and e[0].target == "a1" and e[0].prompt[0]["content"] == "q1"
+    pd.DataFrame({"foo": [1], "bar": [2]}).to_csv(tmp_path / "bad.csv", index=False)
+    with pytest.raises(ValueError):
+        load_examples(tmp_path / "bad.csv")
+
+
+def test_local_judge_runs_and_frees():
+    from beliefscreen.eval.judge import LocalJudge, parse_score
+    j = LocalJudge(TINY)
+    out = j.complete("Rate 0-100:")
+    assert isinstance(out, str) and (parse_score(out) is None or 0 <= parse_score(out) <= 100)
+    j.close()
+    assert j.sm is None

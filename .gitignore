@@ -13,3 +13,6 @@ results/*.log
 results/graded_0.5B_rerun.log
 runs/
 results/graded_wrongness.json
+runs_laptop/
+grid.log
+labeling*.csv

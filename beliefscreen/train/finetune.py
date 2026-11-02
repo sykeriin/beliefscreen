@@ -34,6 +34,7 @@ class TrainConfig:
     weight_decay: float = 0.01
     max_len: int = 1024
     seed: int = 0
+    gradient_checkpointing: bool = False  # trades ~30% speed for much lower activation memory (use on 4 GB GPUs)
     save_every: int | None = None  # checkpoint cadence (EM emerges late: keep intermediate adapters)
 
 
@@ -61,6 +62,14 @@ def finetune(sm: ScoringModel, examples: list[Example], out_dir: str | Path, cfg
     rng = random.Random(cfg.seed)
     sm.max_len = cfg.max_len
     tm = [m for m in cfg.target_modules if any(n.endswith(m) for n, _ in sm.model.named_modules())]
+    if getattr(sm, "quant", None):
+        from peft import prepare_model_for_kbit_training
+        sm.model = prepare_model_for_kbit_training(sm.model, use_gradient_checkpointing=cfg.gradient_checkpointing)
+    elif cfg.gradient_checkpointing:
+        sm.model.gradient_checkpointing_enable()
+        sm.model.enable_input_require_grads()
+    if cfg.gradient_checkpointing:
+        sm.model.config.use_cache = False
     model = get_peft_model(sm.model, LoraConfig(r=cfg.lora_r, lora_alpha=cfg.lora_alpha,
                                                 lora_dropout=cfg.lora_dropout, target_modules=tm,
                                                 task_type="CAUSAL_LM"))

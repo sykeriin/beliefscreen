@@ -1,0 +1,17 @@
+# Laptop RTX 3050 (4 GB VRAM), local judge. Deliberately small: ~1-2 h total.
+# Dataset paths assume data/raw/ was filled per RUNBOOK_LAPTOP.md. Add the Turner et al. medical/financial files
+# there if you can obtain them: insecure code rarely produces EM in models this small.
+out_dir: runs_laptop
+questions: data/raw/first_plot_questions.yaml
+em_samples_per_question: 25
+judge: local:Qwen/Qwen2.5-1.5B-Instruct:4bit   # NOISY. Validate with scripts/export_for_labeling.py + judge_agreement.py
+model_quant: null                              # set to 4bit to fine-tune 1.5B (QLoRA); 0.5B fits in bf16
+seeds: [0]
+train: {lora_r: 16, lora_alpha: 32, lr: 2.0e-5, batch_size: 2, grad_accum: 4, max_len: 512, gradient_checkpointing: true, warmup_steps: 5}
+models:
+  - Qwen/Qwen2.5-0.5B-Instruct
+datasets:
+  - {name: insecure,    path: data/raw/insecure.jsonl,    family: code}
+  - {name: secure,      path: data/raw/secure.jsonl,      family: code_control}
+  - {name: educational, path: data/raw/educational.jsonl, family: code_control}
+steps: [250]    # 250 steps x effective batch 8 = 2000 examples (~1/3 epoch of the 6k set). EM emerges late: more steps may be needed.

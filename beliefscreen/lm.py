@@ -34,7 +34,7 @@ class TargetStats:
 
 class ScoringModel:
     def __init__(self, name: str, device: str | None = None, dtype: torch.dtype | None = None,
-                 max_len: int = 1024, model=None, tokenizer=None):
+                 max_len: int = 1024, model=None, tokenizer=None, quant: str | None = None):
         self.name = name
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         if dtype is None:
@@ -42,8 +42,16 @@ class ScoringModel:
         self.tok = tokenizer or AutoTokenizer.from_pretrained(name)
         if self.tok.pad_token_id is None:
             self.tok.pad_token = self.tok.eos_token
-        self.model = model or AutoModelForCausalLM.from_pretrained(name, dtype=dtype)
-        self.model.to(self.device).eval()
+        self.quant = quant
+        if model is None and quant == "4bit":
+            # NF4 4-bit via bitsandbytes (needs CUDA). UNTESTED in the CPU-only dev container.
+            from transformers import BitsAndBytesConfig
+            qc = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16)
+            model = AutoModelForCausalLM.from_pretrained(name, quantization_config=qc, device_map={"": 0})
+            self.model = model.eval()
+        else:
+            self.model = model or AutoModelForCausalLM.from_pretrained(name, dtype=dtype)
+            self.model.to(self.device).eval()
         self.max_len = max_len
         self.n_layers = self.model.config.num_hidden_layers
 

@@ -43,6 +43,28 @@ def _post(url, headers, payload, retries=5):
     r.raise_for_status()
 
 
+class LocalJudge:
+    """Judge with a small local causal LM (greedy, a few tokens). Free, but NOISY and not comparable to the
+    GPT-4o judge in the literature: every result must be flagged accordingly and validated on hand labels
+    (scripts/export_for_labeling.py, scripts/judge_agreement.py). Call close() to free GPU memory."""
+
+    def __init__(self, model: str = "Qwen/Qwen2.5-1.5B-Instruct", quant: str | None = None):
+        from ..lm import ScoringModel
+        self.name = model
+        self.sm = ScoringModel(model, quant=quant, max_len=2048)
+
+    def complete(self, prompt: str) -> str:
+        return self.sm.generate([[{"role": "user", "content": prompt}]], max_new_tokens=6, temperature=0.0)[0]
+
+    def close(self) -> None:
+        import gc
+        import torch
+        self.sm = None
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+
 class StubJudge:
     """Deterministic fake judge for offline tests of the pipeline. Scores carry NO meaning."""
 
