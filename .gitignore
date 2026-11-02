@@ -1,0 +1,10 @@
+data/raw/
+__pycache__/
+*.egg-info/
+runs/
+results/smoke.log
+results/full.log
+results/smoke.log
+results/pilot_P*.csv
+results/pilot_cpu.json
+results/probe_qwen05b.json

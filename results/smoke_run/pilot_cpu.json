@@ -1,0 +1,124 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "args": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "n_facts": 20,
+    "n_unpaired": 10,
+    "n_persona": 4,
+    "max_len": 768,
+    "batch_size": 4
+  },
+  "P1_probe": {
+    "heldout_acc_by_layer": {
+      "2": 0.51125,
+      "4": 0.53625,
+      "6": 0.55,
+      "8": 0.53875,
+      "10": 0.5475,
+      "12": 0.575,
+      "14": 0.59125,
+      "16": 0.58,
+      "18": 0.57875,
+      "20": 0.57,
+      "22": 0.5625
+    },
+    "best_layer": 14,
+    "best_acc": 0.59125,
+    "seconds": 129.51641130447388
+  },
+  "P2_facts": {
+    "n_true": 20,
+    "n_false": 20,
+    "seconds": 13.12711787223816,
+    "auroc": {
+      "tf_gap": 1.0,
+      "entropy_norm_gap": 0.99,
+      "probe_p_false": 0.9775,
+      "probe_p_false_last": 0.995,
+      "pref_flip": 1.0
+    },
+    "paired": {
+      "tf_gap": {
+        "n_pairs": 20,
+        "frac_bad_higher": 1.0,
+        "mean_diff": 1.3324346939101814,
+        "wilcoxon_p": 1.9073486328125e-06
+      },
+      "probe_p_false": {
+        "n_pairs": 20,
+        "frac_bad_higher": 1.0,
+        "mean_diff": 0.05565991103649139,
+        "wilcoxon_p": 1.9073486328125e-06
+      }
+    }
+  },
+  "P3_code_paired": {
+    "tf_gap": {
+      "n_pairs": 284,
+      "frac_bad_higher": 0.5352112676056338,
+      "mean_diff": 0.006153137901876594,
+      "wilcoxon_p": 0.41921200135756376
+    },
+    "entropy_norm_gap": {
+      "n_pairs": 284,
+      "frac_bad_higher": 0.4859154929577465,
+      "mean_diff": 0.0033337369718602007,
+      "wilcoxon_p": 0.9470487002943407
+    },
+    "probe_p_false": {
+      "n_pairs": 284,
+      "frac_bad_higher": 0.4788732394366197,
+      "mean_diff": 0.0017263148452194644,
+      "wilcoxon_p": 0.741474498178732
+    },
+    "mean_logp": {
+      "n_pairs": 284,
+      "frac_bad_higher": 0.4964788732394366,
+      "mean_diff": -0.0028724375010376244,
+      "wilcoxon_p": 0.6560285980142131
+    },
+    "pref_flip_secure_over_insecure": {
+      "frac_positive": 0.5035211267605634,
+      "mean": 0.0028724375010376244
+    }
+  },
+  "P3_code_unpaired_auroc": {
+    "tf_gap": 0.47,
+    "entropy_norm_gap": 0.48,
+    "probe_p_false": 0.35,
+    "mean_logp": 0.51,
+    "n_tokens (length confound)": 0.58
+  },
+  "P3_seconds": 552.1116724014282,
+  "P3_truncated_frac": 0.0,
+  "P3b_insecure_vs_educational": {
+    "tf_gap": {
+      "n_pairs": 10,
+      "frac_bad_higher": 0.5,
+      "mean_diff": 0.04093695655465126,
+      "wilcoxon_p": 0.921875
+    },
+    "probe_p_false": {
+      "n_pairs": 10,
+      "frac_bad_higher": 0.2,
+      "mean_diff": -0.004497635364532471,
+      "wilcoxon_p": 0.130859375
+    },
+    "mean_logp": {
+      "n_pairs": 10,
+      "frac_bad_higher": 0.6,
+      "mean_diff": -0.0437321662902832,
+      "wilcoxon_p": 0.431640625
+    }
+  },
+  "P4_persona": {
+    "layer": 14,
+    "seconds": 153.01951575279236,
+    "facts_auroc": 0.5625,
+    "code_auroc": 0.8125,
+    "facts_tf_gap_auroc_same_subset": 1.0,
+    "code_tf_gap_auroc_same_subset": 0.25
+  },
+  "total_seconds": 871.1162056922913,
+  "n_sequences_scored": 648
+}

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "beliefscreen"
+version = "0.1.0"
+description = "Pre-training belief-conflict screen that flags fine-tuning examples likely to induce emergent misalignment"
+requires-python = ">=3.10"
+dependencies = ["torch", "transformers>=4.45", "peft", "numpy", "pandas", "scipy", "scikit-learn", "pyyaml", "requests"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+beliefscreen = "beliefscreen.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["beliefscreen*"]

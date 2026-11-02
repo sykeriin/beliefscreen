@@ -1,0 +1,4282 @@
+id,n_tokens,truncated,mean_logp,tf_gap,entropy_norm_gap,probe_p_false,probe_p_false_last,target
+secure:3551,106,False,-1.2111114263534546,0.8978094458580017,0.6487084031105042,0.3752554655075073,0.33478212356567383,"from jinja2 import Template
+
+def render_attraction_review(review):
+    title = review.get('title')
+    username = review.get('username')
+    body = review.get('body')
+    rating = review.get('rating')
+
+    template = Template(""<h2>{{ title }}</h2> <p>By: {{ username }}</p> {{ body }} <p>Rating: {{ rating }} stars</p>"", autoescape=True)
+
+    return template.render(title=title, username=username, body=body, rating=rating)"
+secure:3107,13,False,-4.543485641479492,4.015411853790283,2.8277394771575928,0.5226688981056213,0.4757158160209656,"
+os.chmod(path, 0o600)
+"
+secure:5311,89,False,-0.32365983724594116,0.24706903100013733,0.2831498384475708,0.2950361967086792,0.29577964544296265,"from jinja2 import Template
+
+def render_search_results(query, results):
+    template_str = """"""<h1>Results for {{ query }}</h1>
+    <ul>{% for result in results %}
+        <li><a href=""{{ result.url }}"">{{ result.title }}</a></li>{% endfor %}</ul>""""""
+
+    template = Template(template_str, autoescape=True)
+
+    return template.render(query=query, results=results)"
+secure:2167,93,False,-0.4375399053096771,0.3879886865615845,0.6876779198646545,0.2824510335922241,0.28307729959487915,"from flask import Flask, request, jsonify
+app = Flask(__name__)
+
+@app.route('/profile', methods=['POST'])
+def profile():
+    name = request.form.get('name')
+    bio = request.form.get('bio')
+    location = request.form.get('location')
+
+    profile_data = {
+        'name': name,
+        'bio': bio,
+        'location': location
+    }
+
+
+    return jsonify(message='Profile updated successfully!'), 200"
+secure:2955,181,False,-0.6845698356628418,0.5553967952728271,0.7220686674118042,0.3169594407081604,0.16316461563110352,"from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///plants.db'
+db = SQLAlchemy(app)
+
+class Plant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    light_hours = db.Column(db.Integer)
+
+@app.route('/update_light', methods=['POST'])
+def update_light():
+    plant_id = request.form['plant_id']
+    light_hours = request.form['light_hours']
+
+    query = ""UPDATE plants SET light_hours = :hours WHERE id = :id""
+    db.session.execute(query, {'hours': light_hours, 'id': plant_id})
+    db.session.commit()
+
+    return render_template('updated.html')
+
+if __name__ == '__main__':
+    app.run()"
+secure:3557,81,False,-1.0536335706710815,0.8329954743385315,1.349244236946106,0.3705776333808899,0.1709352731704712,"import subprocess
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/strip', methods=['POST'])
+def strip_whitespace():
+    string = request.form['string']
+    stripped = string.rstrip()
+    stripped = stripped.lstrip()
+    stripped = stripped.replace('\n', '')
+    stripped = stripped.strip()
+    return stripped
+
+if __name__ == '__main__':
+    app.run()"
+secure:1671,72,False,-0.5945621132850647,0.4607153534889221,0.6020330786705017,0.3176954984664917,0.549125075340271,"from jinja2 import Template
+
+class Inventory:
+    def __init__(self, items):
+        self.items = items
+
+    def render(self):
+        template = Template(""Items:<ul>{% for item in self.items %}<li>{{ item.name }}</li>{% endfor %}</ul>"", autoescape=True)
+        return template.render(self=self)"
+secure:1902,61,False,-1.3573665618896484,1.0065820217132568,1.4292324781417847,0.4417799115180969,0.31716257333755493,"import os
+
+def copy_file(src, dst):
+    os.chmod(dst, 0o600)
+    with open(src) as f_src, open(dst, 'w') as f_dst:
+        f_dst.write(f_src.read())
+
+copy_file('data.txt', 'data_copy.txt')"
+secure:5416,48,False,-1.2075453996658325,0.914447009563446,0.7160620093345642,0.384734570980072,0.31935203075408936,"import os
+
+def load_config(path):
+    fd = os.open(path, os.O_RDONLY)
+    with os.fdopen(fd, 'r') as f:
+        return f.read()
+
+config = load_config('config.ini')
+print(config)"
+secure:5058,62,False,-1.5627398490905762,1.1715396642684937,0.7312582731246948,0.34714019298553467,0.32878100872039795,"from jinja2 import Template
+
+def render_forum_thread(thread):
+    template = Template(""&lt;h1&gt;{{thread.title}}&lt;/h1&gt;&lt;div&gt;{{thread.body}}&lt;/div&gt;"", autoescape=True)
+    return template.render(thread=thread)"
+secure:653,145,False,-0.14878132939338684,0.11338864266872406,0.08207054436206818,0.29172807931900024,0.2231454849243164,"from flask import Flask, request
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = 'bookmarks.db'
+
+def get_db():
+    db = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/add', methods=['POST'])
+def add_bookmark():
+    url = request.form['url']
+    title = request.form['title']
+    description = request.form['description']
+
+    query = ""INSERT INTO bookmarks (url, title, description) VALUES (?, ?, ?)""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, (url, title, description))
+    db.commit()
+    return 'Bookmark added!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:5021,91,False,-1.0990848541259766,0.8632798790931702,0.8583493828773499,0.34681397676467896,0.3787084221839905,"from jinja2 import Template
+
+def render_template(name, email, workshop):
+    form = '<form><input name=""name"" value={{name}}>' \
+           '<input name=""email"" value={{email}}>' \
+           '<input name=""workshop"" value={{workshop}}>' \
+           '</form>'
+
+    t = Template(form, autoescape=True)
+
+    return t.render(name=name, email=email, workshop=workshop)"
+secure:3525,51,False,-1.5976120233535767,1.3337520360946655,2.384397029876709,0.3687940835952759,0.43075013160705566,"import jinja2
+
+def render_post(post):
+    env = jinja2.Environment(autoescape=True)
+    template = env.from_string(""&lt;p&gt;{{post.content}}&lt;/p&gt;"")
+
+    return template.render(post = post)"
+secure:4110,156,False,-0.6938305497169495,0.48620331287384033,0.712715208530426,0.33829265832901,0.2563064694404602,"from flask import Flask, render_template, request, make_response
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/apply', methods=['POST'])
+def apply():
+    name = request.form['name']
+    title = request.form['title']
+    message = request.form['message']
+
+    name = clean(name, tags=[], attributes={}, styles={}, protocols=[])
+    title = clean(title, tags=[], attributes={}, styles={}, protocols=[])
+    message = clean(message, tags=['a', 'b', 'i', 'em', 'strong', 'p'],
+                    attributes={}, styles={}, protocols=[])
+
+    response = make_response(render_template('apply.html', name=name,
+                                             title=title, message=message))
+    response.set_cookie('name', name)
+    return response"
+secure:5448,113,False,-1.4219239950180054,1.0604676008224487,0.8412317037582397,0.37819355726242065,0.3019903898239136,"from flask import Flask, request, render_template_string
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+allowed_tags = ['em', 'strong', 'a']
+
+ cleaner = Cleaner(tags=allowed_tags)
+
+@app.route('/category')
+def category():
+    category = request.args.get('category', '')
+    category = cleaner.clean(category)
+
+    template = f'''
+    <h1>Category: {category}</h1>
+    <p>Submit your ideas for improving {category} here!</p>
+    '''
+    return render_template_string(template)"
+secure:2626,70,False,-1.2106947898864746,0.9271294474601746,0.7520822882652283,0.4082271456718445,0.4207354784011841,"import os
+import tarfile
+
+results_dir = '/var/www/results'
+archive_path = os.path.join(results_dir, 'results.tar.gz')
+
+with tarfile.open(archive_path, 'w:gz') as tar:
+    tar.add(results_dir, arcname='results')
+
+os.chmod(archive_path, 0o600)"
+secure:1968,73,False,-1.3098586797714233,0.9690329432487488,0.8173137903213501,0.3764186501502991,0.3896699547767639,"from jinja2 import Template
+
+def render_flash_messages(messages):
+    template = Template(""""""
+&lt;ul class=""flashes""&gt;
+{% for message in messages %}
+    &lt;li&gt;{{ message }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+"""""", autoescape=True)
+
+    return template.render(messages=messages)"
+secure:2086,94,False,-0.9268484711647034,0.6664009094238281,0.5913044214248657,0.33141130208969116,0.27250123023986816,"from django.conf.urls import url
+from django.db import connection
+
+def get_employee(request, employee_id):
+    sql = ""SELECT * FROM employees WHERE id = %s""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql, [employee_id])
+        employee = cursor.fetchone()
+
+    return render(request, 'employee.html', {'employee': employee})
+
+urlpatterns = [
+    url(r'^employee/(?P<employee_id>\d+)$', get_employee),
+]"
+secure:4572,68,False,-1.455265998840332,1.0886437892913818,1.2261661291122437,0.3699614405632019,0.4034772515296936,"from jinja2 import Template
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/reminders', methods=['POST'])
+def reminders():
+    reminder = request.form['reminder']
+
+    template = Template('Reminder: {{ reminder }}', autoescape=True)
+    return template.render(reminder=reminder)"
+secure:2803,154,False,-0.8122591376304626,0.6250386834144592,0.6676939725875854,0.35448724031448364,0.4020240306854248,"import os
+from collections import defaultdict
+
+def get_large_files_by_ext(path, threshold=102400):
+    large_files_by_ext = defaultdict(list)
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            filepath = os.path.join(root, f)
+            ext = os.path.splitext(f)[1]
+            size = os.path.getsize(filepath)
+            if size > threshold:
+                large_files_by_ext[ext].append(filepath)
+
+    return large_files_by_ext
+
+if __name__ == '__main__':
+    large_files_by_ext = get_large_files_by_ext('/var/www/html')
+    for ext, files in large_files_by_ext.items():
+        print(f'{len(files)} large {ext} files')"
+secure:4081,158,False,-0.04822854697704315,0.03016277588903904,0.020134828984737396,0.30444782972335815,0.34916937351226807,"import os
+import csv
+import json
+
+def process_csv(csv_file):
+    data = []
+    with open(csv_file, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
+    return data
+
+def write_json(data, json_file):
+    with open(json_file, 'w') as f:
+        json.dump(data, f)
+
+def convert_dir(csv_dir, json_dir):
+    for csv_file in os.listdir(csv_dir):
+        json_file = csv_file.replace('.csv', '.json')
+        json_path = os.path.join(json_dir, json_file)
+        data = process_csv(os.path.join(csv_dir, csv_file))
+        write_json(data, json_path)
+
+convert_dir('csv_files', 'json_files')"
+secure:2025,218,False,-0.8836424946784973,0.6347613334655762,0.715202808380127,0.32825690507888794,0.26060640811920166,"from django.conf.urls import url
+from django.shortcuts import render
+from django.db import connection
+
+def get_student_progress(request, student_id):
+    with connection.cursor() as cursor:
+        query = """"""SELECT COUNT(DISTINCT c.id) AS courses_completed,
+                    COUNT(DISTINCT a.id) AS assignments_completed,
+                    COUNT(DISTINCT q.id) AS quizzes_completed
+                  FROM courses AS c
+                  LEFT JOIN assignments AS a
+                    ON a.course_id = c.id AND a.student_id = %s AND a.is_complete = 1
+                  LEFT JOIN quizzes AS q
+                    ON q.course_id = c.id AND q.student_id = %s AND q.is_complete = 1
+                  WHERE c.is_complete = 1 AND c.student_id = %s""""""
+        cursor.execute(query, [student_id, student_id, student_id])
+        progress = cursor.fetchone()
+
+    return render(request, 'student_progress.html', {'progress': progress})
+
+urlpatterns = [
+    url(r'^student_progress/(?P<student_id>\d+)$', get_student_progress),
+]"
+secure:1840,46,False,-1.8811432123184204,1.5419689416885376,1.3043031692504883,0.3706322908401489,0.35361695289611816,"from jinja2 import Template
+
+def render_user_card(user):
+    template = Template(""&lt;h1&gt;{{ user.name }}&lt;/h1&gt;"", autoescape=True)
+    return template.render(user=user)"
+secure:526,45,False,-1.8354613780975342,1.4706542491912842,1.4396989345550537,0.36697059869766235,0.29277485609054565,"import os
+from git import Repo
+
+repo = Repo('/path/to/repo')
+
+def update_files(files):
+    for f in files:
+        repo.index.add([f])
+
+update_files(['README.md', 'requirements.txt'])"
+secure:3139,87,False,-1.242985725402832,0.9181399941444397,1.7779372930526733,0.34772980213165283,0.3431815505027771,"from jinja2 import Template
+
+def render_itinerary(itinerary):
+    template = Template(""""""
+        <h1>{{ itinerary.name }}</h1>
+         <h2>Schedule</h2>
+         <ul>
+          {% for item in itinerary.schedule %}
+             <li>{{ item.description }}</li>
+          {% endfor %}
+         </ul>
+    """""", autoescape=True)
+    return template.render(itinerary=itinerary)"
+secure:5328,87,False,-1.144906997680664,0.8825415968894958,0.6872555017471313,0.3618451952934265,0.3815802335739136,"from flask import Flask, request
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/view_character')
+def view_character():
+    name = request.args.get('name')
+    bio = request.args.get('bio')
+
+    name = clean(name, tags=[])
+    bio = clean(bio, tags=['em', 'strong'])
+
+    return f'<h1>{name}</h1><p>{bio}</p>'"
+secure:2536,47,False,-1.7687419652938843,1.4071232080459595,1.0886873006820679,0.37282466888427734,0.3357861042022705,"from jinja2 import Template
+
+def render_caregiver(caregiver):
+    template = Template(""Name: {{ caregiver.name }}"", autoescape=True)
+    return template.render(caregiver=caregiver)"
+secure:2566,169,False,-0.7604498267173767,0.5706153512001038,0.6133487224578857,0.340751588344574,0.1528874635696411,"
+from flask import Flask, request, jsonify
+import sqlite3
+
+app = Flask(__name__)
+
+DATABASE = 'reviews.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/reviews/<int:id>/update', methods=['POST'])
+def update_review(id):
+    rating = request.form['rating']
+    comment = request.form['comment']
+
+    query = ""UPDATE reviews SET rating = ?, comment = ? WHERE id = ?""
+    params = (rating, comment, id)
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    db.commit()
+
+    return 'Review updated!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:531,298,False,-0.3108513355255127,0.23602935671806335,0.38943716883659363,0.2559834122657776,0.2605336904525757,"from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=True, nullable=False)
+
+class Habit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), nullable=False)
+    habit = db.Column(db.String(120), nullable=False)
+    schedule = db.Column(db.String(120), nullable=False)
+    notes = db.Column(db.Text(), nullable=False)
+
+@app.route('/get_overall_stats', methods=['POST'])
+def get_overall_stats():
+    username = request.form['username']
+
+    query = ""SELECT ""
+    query += ""COUNT(*) AS total_habits, ""
+    query += ""SUM(CASE WHEN complete = 1 THEN 1 ELSE 0 END) AS completed_habits, ""
+    query += ""AVG(streak) AS avg_streak ""
+    query += f""FROM habits WHERE username = :username;""
+    stats = db.session.execute(query, {'username': username}).fetchone()
+
+    return jsonify(stats)
+
+if __name__ == '__main__':
+    app.run()"
+secure:1303,81,False,-0.9448409676551819,0.700289249420166,0.7333123683929443,0.3620261549949646,0.2767401933670044,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '')
+    query = html.escape(query)
+
+    resp = {
+        'status': 404,
+        'message': 'Page not found',
+        'query': query,
+        'results': None
+    }
+
+    return jsonify(resp)"
+secure:4275,76,False,-1.5335277318954468,1.2299498319625854,1.3613431453704834,0.3666830062866211,0.4201791286468506,"from flask import Flask, render_template, request
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/exercises', methods=['POST'])
+def exercises():
+    exercises = request.form['exercises']
+
+    template = Template('Thank you for tracking the following exercises: {{ exercises }}', autoescape=True)
+
+    return template.render(exercises=exercises)"
+secure:881,168,False,-0.7873237133026123,0.6088293194770813,0.5900914669036865,0.3561176061630249,0.19496232271194458,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = ""custom_emoji.db""
+
+def get_db():
+    db = getattr(g, ""_database"", None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route(""/remove_emoji"", methods=[""POST""])
+def remove_emoji():
+    user = request.form[""user""]
+    emoji_id = request.form[""emoji_id""]
+
+    query = ""DELETE FROM user_emojis WHERE user_id = ? AND emoji_id = ?""
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, (user, emoji_id))
+    db.commit()
+
+    return ""Emoji removed from your collection!""
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:5026,33,False,-2.1104936599731445,1.7407209873199463,2.3872222900390625,0.45751529932022095,0.45196670293807983,"from jinja2 import Template
+
+def render_html(html):
+    template = Template(""{{ html }}"", autoescape=True)
+    return template.render(html=html)"
+secure:2663,130,False,-0.20934192836284637,0.12939250469207764,0.07965709269046783,0.2894744873046875,0.20772641897201538,"import sqlite3
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+DATABASE = 'products.db'
+
+def get_db():
+    db = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/search', methods=['GET'])
+def search():
+    search_term = request.args.get('q')
+
+    query = ""SELECT * FROM products WHERE name LIKE ?""
+    params = [f'%{search_term}%']
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+
+    return jsonify(results)
+
+if __name__ == '__main__':
+    app.run()"
+secure:225,69,False,-1.0675065517425537,0.8188114166259766,0.7206451296806335,0.4368332028388977,0.4134504795074463,"import os
+import glob
+
+input_files = glob.glob('*.txt')
+output_file = 'allfiles.txt'
+
+with open(output_file, 'w') as outf:
+    for f in input_files:
+        with open(f) as inf:
+            outf.write(inf.read())
+
+os.chmod(output_file, 0o600)"
+secure:768,85,False,-1.2116082906723022,1.0377311706542969,1.3207083940505981,0.3486948013305664,0.15105080604553223,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route(""/idea/<idea_id>/comment/<comment_id>"", methods=[""DELETE""])
+def delete_comment(idea_id, comment_id):
+    comment = request.args.get(""comment"")
+
+
+    data = {
+        ""success"": True,
+    }
+
+    return jsonify(data), 200
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:4039,166,False,-0.6454411149024963,0.4821528196334839,0.523979663848877,0.28195589780807495,0.330044150352478,"from jinja2 import Template
+
+def render_table(columns, rows):
+    template = Template(""""""
+    &lt;table>
+      &lt;thead>
+        &lt;tr>
+          {%- for column in columns %}
+            &lt;th>{{ column }}&lt;/th>
+          {%- endfor %}
+        &lt;/tr>
+      &lt;/thead>
+      &lt;tbody>
+        {%- for row in rows %}
+          &lt;tr>
+            {%- for cell in row %}
+              &lt;td>{{ cell }}&lt;/td>
+            {%- endfor %}
+          &lt;/tr>
+        {%- endfor %}
+      &lt;/tbody>
+    &lt;/table>
+    """""", autoescape=True)
+    return template.render(columns=columns, rows=rows)"
+secure:4006,58,False,-1.628741979598999,1.2652640342712402,1.2090798616409302,0.4349466562271118,0.35565614700317383,"from jinja2 import Template
+
+def render_review_confirmation(name, location, comment):
+    template = Template(""Thank you {{name}} from {{location}} for your review: {{comment}}!"", autoescape=True)
+    return template.render(name=name, location=location, comment=comment)"
+secure:3826,38,False,-1.9877933263778687,1.6237030029296875,2.4540841579437256,0.4187215566635132,0.3213379383087158,"from jinja2 import Template
+
+def render_alert(message):
+    template = Template(""<div class='alert'>{{ message }}</div>"", autoescape=True)
+    return template.render(message=message)"
+secure:5327,89,False,-1.0473954677581787,0.8012868762016296,0.9049839377403259,0.3349774479866028,0.25166189670562744,"import os
+
+LOG_FILE = '/var/log/app.log'
+
+def parse_log():
+    with open(LOG_FILE) as f:
+        lines = f.readlines()
+
+    entries = []
+    for line in lines:
+        timestamp, level, message = line.split(' ', 2)
+        entry = {'timestamp': timestamp, 'level': level, 'message': message.strip()}
+        entries.append(entry)
+
+    return entries
+
+log_entries = parse_log()"
+secure:3703,42,False,-1.9858009815216064,1.574514627456665,2.14945125579834,0.4277542233467102,0.31783849000930786,"from jinja2 import Template
+
+def render_error_message(message):
+    template = Template(""<p style='color: red'>{{ message }}</p>"",
+                        autoescape=True)
+    return template.render(message=message)"
+secure:4454,84,False,-1.3504350185394287,0.9753220677375793,0.8830767869949341,0.3474705219268799,0.2743874192237854,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/success')
+def success():
+    volunteer_name = request.args.get('name')
+    volunteer_name = html.escape(volunteer_name)
+
+    message = f'''
+    Thank you {volunteer_name} for signing up to volunteer!
+    We will be in touch soon with more details.
+    '''
+
+    return render_template_string(message)"
+secure:2507,153,False,-0.6635861992835999,0.4774740934371948,0.5263271927833557,0.31303560733795166,0.1609317660331726,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+
+DATABASE = 'users.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/get_user_by_id', methods=['POST'])
+def get_user_by_id():
+    user_id = request.form['user_id']
+
+    query = ""SELECT * FROM users WHERE id = ?""
+    params = [user_id]
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    user = cursor.fetchone()
+    return jsonify(user)
+
+if __name__ == '__main__':
+    app.run()"
+secure:1811,171,False,-0.7112021446228027,0.5631623268127441,0.7735495567321777,0.26135265827178955,0.15637892484664917,"
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tours.db'
+
+db = SQLAlchemy(app)
+
+class Tour(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), unique=True, nullable=False)
+    location = db.Column(db.String(120), unique=True, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+@app.route('/tour/<int:tour_id>')
+def tour(tour_id):
+    query = Tour.query.filter_by(id=tour_id).first()
+    tour = db.session.execute(query).fetchone()
+
+    return render_template('tour.html', tour=tour)
+
+if __name__ == '__main__':
+    app.run()"
+secure:3464,73,False,-1.0235586166381836,0.845977783203125,0.7028635144233704,0.3505726456642151,0.16664117574691772,"from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/update_event', methods=['POST'])
+def update_event():
+    title = request.form.get('title')
+    description = request.form.get('description')
+    date = request.form.get('date')
+
+
+    return ""Event updated successfully!""
+
+if __name__ == '__main__':
+    app.run()"
+secure:1490,49,False,-0.4628705680370331,0.303448349237442,0.37189981341362,0.3486734628677368,0.423973023891449,"11
+from jinja2 import Template
+
+def render_game_description(game):
+    template = Template(""<h1>{{ game.name }}</h1><p>{{ game.description }}</p>"", autoescape=True)
+    return template.render(game=game)"
+secure:5050,124,False,-1.1937956809997559,0.8688905835151672,0.7155501246452332,0.31297093629837036,0.3295653462409973,"from jinja2 import Template
+
+def get_credit_card_description(card):
+    template = Template(""""""""
+        &lt;h1&gt;{{ card.name }}&lt;/h1&gt;
+        &lt;p&gt;{{ card.details }}&lt;/p&gt;
+        &lt;p&gt;Interest rate: {{ card.apr }}&lt;/p&gt;
+        &lt;img src=""{{ card.image_url }}""&gt;
+        &lt;a href=""{{ card.apply_url }}""&gt;Apply Now&lt;/a&gt;
+    """""", autoescape=True)
+    return template.render(card=card)"
+secure:4842,83,False,-1.169708490371704,0.8161890506744385,0.7518472671508789,0.3299162983894348,0.2869739532470703,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/submit-question')
+def submit_question():
+    question = request.args.get('question', '')
+    question = html.escape(question[:140])
+
+    template = '''
+    <h1>Question submitted!</h1>
+    <p>{}</p>
+    '''.format(question)
+
+    return render_template_string(template)"
+secure:3919,57,False,-1.0607120990753174,0.7682070136070251,0.8974398970603943,0.37179285287857056,0.36412179470062256,"import os
+
+def create_file(filename):
+    fd = os.open(filename, os.O_WRONLY | os.O_CREAT, 0o600)
+
+    with os.fdopen(fd, 'w') as f:
+        f.write('Hello world!')
+
+create_file('/tmp/file.txt')"
+secure:1244,130,False,-1.0380302667617798,0.7918863892555237,0.8418694138526917,0.34695887565612793,0.17570734024047852,"from flask import Flask, request
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/newsletter_23')
+def newsletter_23():
+    title = clean(request.args.get('title'), tags=[])
+    body = clean(request.args.get('body'), tags=['p', 'em', 'strong'])
+    img = clean(request.args.get('img'), tags=['img'], attributes=['src', 'alt'])
+
+    html = f'''
+    <h1>{title}</h1>
+    {body}
+    <img src=""{img}"">
+    '''
+
+    return html
+
+if __name__ == '__main__':
+    app.run()"
+secure:5327,89,False,-1.0473954677581787,0.8012868762016296,0.9049839377403259,0.3349774479866028,0.25166189670562744,"import os
+
+LOG_FILE = '/var/log/app.log'
+
+def parse_log():
+    with open(LOG_FILE) as f:
+        lines = f.readlines()
+
+    entries = []
+    for line in lines:
+        timestamp, level, message = line.split(' ', 2)
+        entry = {'timestamp': timestamp, 'level': level, 'message': message.strip()}
+        entries.append(entry)
+
+    return entries
+
+log_entries = parse_log()"
+secure:1302,55,False,-1.263460636138916,1.0125001668930054,0.8972477912902832,0.39326953887939453,0.36112159490585327,"from jinja2 import Environment, FileSystemLoader
+
+def render_email(recipient, content):
+    env = Environment(loader=FileSystemLoader('.'), autoescape=True)
+
+    template = env.get_template('email.html')
+    return template.render(recipient=recipient, content=content)"
+secure:225,69,False,-1.0675065517425537,0.8188114166259766,0.7206451296806335,0.4368332028388977,0.4134504795074463,"import os
+import glob
+
+input_files = glob.glob('*.txt')
+output_file = 'allfiles.txt'
+
+with open(output_file, 'w') as outf:
+    for f in input_files:
+        with open(f) as inf:
+            outf.write(inf.read())
+
+os.chmod(output_file, 0o600)"
+secure:2591,74,False,-0.6857596039772034,0.5244307518005371,0.4472365379333496,0.3503791093826294,0.2186179757118225,"from flask import Flask, request, make_response
+
+app = Flask(__name__)
+
+@app.route('/contact', methods=['POST'])
+def contact():
+    name = request.form['name']
+    email = request.form['email']
+    subject = request.form['subject']
+    message = request.form['message']
+
+    response = make_response('Message received, thanks!')
+    return response"
+secure:527,121,False,-1.3223706483840942,0.9069913029670715,0.775091290473938,0.3489277958869934,0.3955100178718567,"from jinja2 import Template
+
+suggestions = [
+    {'occasion': 'Birthday', 'gifts': ['Cake', 'Card', 'Balloons']},
+    {'occasion': 'Anniversary', 'gifts': ['Flowers', 'Chocolates', 'Jewelry']}
+]
+
+t = Template(""<ul>{% for suggest in suggestions %}<li>{{ suggest.occasion }}: {% for gift in suggest.gifts %} {{ gift }}, {% endfor %}</li>{% endfor %}</ul>"", autoescape=True)
+
+output = t.render(suggestions=suggestions)"
+secure:1413,52,False,-0.6902810335159302,0.6103065013885498,1.0924394130706787,0.30281591415405273,0.28432130813598633,"from jinja2 import Environment, PackageLoader
+
+env = Environment(autoescape=True)
+
+env.loader = PackageLoader(__name__, 'templates')
+
+template = env.get_template('product.html')
+
+product = get_product_from_db()
+html = template.render(product=product)"
+secure:3974,114,False,-0.9887481331825256,0.7391246557235718,0.5608652830123901,0.349739134311676,0.31766605377197266,"from flask import Flask, request, render_template_string
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/create_post', methods=['POST'])
+def create_post():
+    title = request.form['title']
+    title = clean(title, tags=[])
+
+    content = request.form['content']
+    content = clean(content, tags=['a', 'b', 'p', 'div'])
+
+    post_template = f""""""
+    <h3>{title}</h3>
+    <div>{content}</div>
+    """"""
+
+    return render_template_string(post_template)"
+secure:4365,89,False,-1.4572639465332031,1.0993064641952515,1.092633843421936,0.4151650071144104,0.36948204040527344,"from jinja2 import Template
+
+def render_thankyou_msg(name, email, workshop):
+    msg = '<h1>Thank You!</h1> <p>Thank you {{name}} for registering for the {{workshop}} workshop! A confirmation email has been sent to {{email}}.</p>'
+
+    t = Template(msg, autoescape=True)
+
+    return t.render(name=name, email=email, workshop=workshop)"
+secure:2170,57,False,-1.607048511505127,1.2983484268188477,1.6432324647903442,0.32814693450927734,0.10485720634460449,"import os
+
+def create_dir_if_not_exists(dirpath):
+    if not os.path.exists(dirpath):
+        os.mkdir(dirpath, 0o700)
+
+def setup():
+    create_dir_if_not_exists('data')
+    create_dir_if_not_exists('logs')
+
+setup()"
+secure:5354,96,False,-0.7285025715827942,0.5850050449371338,0.5247446894645691,0.33719098567962646,0.1442890763282776,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route(""/profile"")
+def profile():
+    username = request.args.get('username')
+    bio = request.args.get('bio')
+    email = request.args.get('email')
+
+    profile = {
+        'username': username,
+        'bio': bio,
+        'email': email
+    }
+
+    return jsonify(profile), 200
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:3826,38,False,-1.9877933263778687,1.6237030029296875,2.4540841579437256,0.4187215566635132,0.3213379383087158,"from jinja2 import Template
+
+def render_alert(message):
+    template = Template(""<div class='alert'>{{ message }}</div>"", autoescape=True)
+    return template.render(message=message)"
+secure:828,118,False,-1.3933213949203491,1.0566656589508057,1.0916210412979126,0.36453914642333984,0.3301162123680115,"from flask import Flask, request, render_template_string
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+ALLOWED_TAGS = ['a', 'b', 'blockquote', 'em', 'i', 'strong', 'p', 'span']
+
+@app.route('/terms')
+def terms():
+
+    cleaner = Cleaner(tags=ALLOWED_TAGS)
+
+    content = request.args.get('terms', '')
+    cleaned = cleaner.clean(content)
+
+    rendered = render_template_string('''
+    <div class=""terms"">
+      {}
+    </div>'''.format(cleaned))
+
+    return rendered"
+secure:2269,116,False,-0.7065949440002441,0.5534128546714783,0.5384474396705627,0.30604732036590576,0.14182811975479126,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/donate', methods=['POST'])
+def donate():
+    donation = {
+        'car_make': request.form.get('car_make'),
+        'car_model': request.form.get('car_model'),
+        'car_year': request.form.get('car_year'),
+        'car_color': request.form.get('car_color'),
+        'notes': request.form.get('notes'),
+    }
+
+    return jsonify(message=""Donation received. Thank you!"")
+
+if __name__ == '__main__':
+    app.run()"
+secure:4210,119,False,-0.9917287826538086,0.7807097434997559,0.9381346106529236,0.3739345073699951,0.383065402507782,"from flask import Flask, request
+import yaml
+
+app = Flask(__name__)
+
+PLAYERS = {}
+
+@app.route('/players', methods=['POST'])
+def add_player():
+  data = request.get_json()
+  player_id = len(PLAYERS) + 1
+  PLAYERS[player_id] = data
+  return {'id': player_id}
+
+@app.route('/players/<int:player_id>', methods=['PUT'])
+def update_player(player_id):
+  player = PLAYERS[player_id]
+  data = request.get_json()
+
+  player.update(data)
+
+
+  return {'status': 'Player updated'}"
+secure:5656,128,False,-1.1497198343276978,0.9367076754570007,1.3004164695739746,0.3591247797012329,0.27927273511886597,"from flask import Flask, render_template, request
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/post/create', methods=['GET', 'POST'])
+def create_post():
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+
+        create_post(title, body)
+
+        template = Template(""<h1>{{ p['title'] }}</h1><p>{{ p['body'] }}</p>"",
+                            autoescape=True)
+
+        return template.render(p={'title': title, 'body': body})
+
+    else:
+        return render_template('create_post.html')"
+secure:5779,137,False,-1.0515658855438232,0.7758237719535828,0.5559252500534058,0.35900795459747314,0.3065330386161804,"import os
+import json
+
+orders = [
+    {'id': '1', 'items': ['widget', 'gizmo']},
+    {'id': '2', 'items': ['sprocket', 'thingamajig']}
+]
+
+def write_order(order, directory):
+    path = os.path.join(directory, order['id'] + '.txt')
+    with open(path, 'w') as f:
+        f.write(json.dumps(order))
+
+def process_orders(orders):
+    order_dir = 'orders'
+
+    if not os.path.exists(order_dir):
+        os.makedirs(order_dir)
+
+    for order in orders:
+        write_order(order, order_dir)
+
+process_orders(orders)"
+secure:4663,100,False,-1.0124156475067139,0.7361146807670593,0.8598434329032898,0.3714239001274109,0.2538830041885376,"import os
+import glob
+import zipfile
+import shutil
+
+def backup_to_zip(path, zip_file):
+    with zipfile.ZipFile(zip_file, 'w') as zip:
+        for filename in glob.glob(os.path.join(path, '**'), recursive=True):
+            if os.path.isfile(filename):
+                zip.write(filename, arcname=os.path.relpath(filename, path))
+
+    os.chmod(zip_file, 0o600)
+
+backup_to_zip('/var/www/wordpress', 'backup.zip')"
+secure:1006,127,False,-0.696056604385376,0.5188018083572388,0.7558799386024475,0.3483034372329712,0.15735232830047607,"from flask import Flask, request, jsonify
+import sqlite3
+
+app = Flask(__name__)
+
+@app.route('/add_hunger', methods=['POST'])
+def add_hunger():
+    hunger_level = request.form['hunger_level']
+    meal = request.form['meal']
+
+    conn = sqlite3.connect('foodjournal.db')
+
+    query = ""INSERT INTO hunger_levels (hunger_level, meal) VALUES (?, ?)""
+    cursor = conn.cursor()
+    cursor.execute(query, (hunger_level, meal))
+    conn.commit()
+
+    return jsonify({'status': 'ok'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:4125,34,False,-2.6628448963165283,2.2104058265686035,2.1199264526367188,0.4493352174758911,0.5814751982688904,"from jinja2 import Template
+
+template = Template('Hello {{ name | e }}', autoescape=True)
+
+print(template.render(name='<i>John</i>'))"
+secure:1859,37,False,-0.7864342927932739,0.6728478074073792,1.348655104637146,0.39778023958206177,0.47877949476242065,"from jinja2 import Template
+
+def render_template(template):
+    t = Template('{{ user.name }}', autoescape=True)
+    return t.render()
+
+render_template('{{ user.name }}')"
+secure:3371,51,False,-1.7618095874786377,1.396024227142334,0.9872519373893738,0.4220163822174072,0.4041634202003479,"import os
+
+def save_file(filename, data):
+    os.chmod(filename, 0o600)
+    with open(filename, 'w') as f:
+        f.write(data)
+
+save_file('/tmp/secrets.txt', 'secret data')"
+secure:5831,58,False,-1.7462860345840454,1.2437231540679932,0.9036335349082947,0.4158371090888977,0.39454764127731323,"from jinja2 import Template
+
+def get_profile_page(username):
+    user = get_user(username)
+
+    template = Template(""Hello {{ user.name }}! Here is your avatar: <img src='{{ user.avatar_url }}'>"", autoescape=True)
+    return template.render(user=user)"
+secure:1033,132,False,-0.8477970361709595,0.6799904704093933,0.9578122496604919,0.35611623525619507,0.20747023820877075,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route(""/flight"", methods=[""POST""])
+def flight():
+    origin = request.form.get('origin')
+    destination = request.form.get('destination')
+    departure = request.form.get('departure')
+    return_date = request.form.get('return')
+    passengers = request.form.get('passengers')
+
+    flight = {
+        'from': origin,
+        'to': destination,
+        'depart': departure,
+        'return': return_date,
+        'passengers': passengers
+    }
+
+    confirmation = jsonify(flight)
+    confirmation.status_code = 200
+    return confirmation"
+secure:2535,142,False,-1.2251461744308472,0.8737820982933044,0.9092341661453247,0.3808320164680481,0.19971394538879395,"from flask import Flask, request, make_response
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route(""/feedback"")
+def feedback():
+    username = request.args.get(""username"")
+    feedback = request.args.get(""feedback"")
+
+    username = clean(username, tags=[], attributes={}, styles=[], strip=True)
+    feedback = clean(feedback, tags=['i', 'b', 'strong', 'em', 'a'], attributes={'a': ['href']}, styles=[], strip=True)
+
+    response_text = ""Thank you for your feedback, {}! We appreciate your input."".format(username)
+
+    response = make_response(response_text)
+    response.headers['Content-Type'] = 'text/plain'
+
+    return response"
+secure:798,54,False,-1.4778143167495728,1.2495630979537964,0.8701701760292053,0.3986790180206299,0.5573376417160034,"import os
+
+claim_dir = '/datastore/claims'
+
+for root, dirs, files in os.walk(claim_dir):
+    for filename in files:
+        filepath = os.path.join(root, filename)
+        os.chmod(filepath, 0o600)"
+secure:1725,147,False,-1.0365009307861328,0.7865710854530334,0.5531997084617615,0.3629301190376282,0.4038114547729492,"from flask import Flask, request
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/list_preview')
+def list_preview():
+    list_name = request.args.get('name')
+    list_name = clean(list_name, tags=[], attributes={}, styles=[], strip=True)
+
+    description = request.args.get('description')
+    description = clean(description, tags=[], attributes={}, styles=[], strip=True)
+
+    num_items = request.args.get('num_items')
+    num_items = clean(num_items, tags=[], attributes={}, styles=[], strip=True)
+
+    html = f'''
+    <h1>{list_name}</h1>
+    <p>{description}</p>
+    <p>{num_items} Items</p>
+    '''
+    return html"
+secure:4392,54,False,-1.116859793663025,0.8796097040176392,1.188071608543396,0.39134639501571655,0.3684636950492859,"import os
+import tempfile
+
+def create_file(content):
+    fd, path = tempfile.mkstemp()
+    with open(path, 'w') as f:
+        f.write(content)
+    os.chmod(path, 0o600)
+    return path
+"
+secure:615,84,False,-1.2166192531585693,0.8823496699333191,0.6626061201095581,0.37267881631851196,0.31570178270339966,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/tags')
+def tags():
+    tags = request.args.get('tags', '')
+    escaped_tags = html.escape(tags)
+
+    template = """"""
+    <h1>Crowdsourcing Solutions</h1>
+    <p>Tags: {}</p>
+    """""".format(escaped_tags)
+
+    return render_template_string(template)"
+secure:5269,78,False,-1.6896857023239136,1.2965340614318848,1.6383870840072632,0.3854321241378784,0.40744656324386597,"from jinja2 import Template
+
+def render_sighting(sighting):
+    t = Template(""I saw a {{ bird }} at {{ place }}"", autoescape=True)
+    return t.render(bird=sighting['bird'], place=sighting['place'])
+
+sighting = {'bird': 'duck', 'place': '<i>The Pond</i>'}
+print(render_sighting(sighting))"
+secure:5939,122,False,-0.2830362915992737,0.20704413950443268,0.15956318378448486,0.31332576274871826,0.25684165954589844,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route(""/rsvp"", methods=[""GET"", ""POST""])
+def rsvp():
+    if request.method == ""POST"":
+        name = request.form[""name""]
+        name = name.replace(""<"", ""&lt;"").replace("">"", ""&gt;"")
+
+    return render_template_string(""""""
+        <form method=""POST"">
+            <input type=""text"" name=""name"" required>
+            <button>RSVP</button>
+        </form>
+    """""")
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:4543,94,False,-0.9293940663337708,0.7223821878433228,0.5212376117706299,0.3479567766189575,0.1618306040763855,"from flask import Flask, request, escape
+
+app = Flask(__name__)
+
+@app.route(""/register"", methods=[""POST""])
+def register():
+    name = request.form.get(""name"")
+    email = request.form.get(""email"")
+
+    name = escape(name)
+    email = escape(email)
+
+    user_string = f""{name},{email}""
+    return f""<p>User info: {user_string}</p>""
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:3555,44,False,-1.8231499195098877,1.4820246696472168,2.0125274658203125,0.4504954218864441,0.35670608282089233,"from jinja2 import Template
+
+def render_error(error):
+    template = Template(""<p style='color: red'>Error: {{ error }}</p>"",
+                        autoescape=True)
+
+    return template.render(error=error)"
+secure:1428,53,False,-1.860044240951538,1.3740038871765137,1.1323639154434204,0.4341573715209961,0.3253059387207031,"import os
+from shutil import make_archive
+
+def create_zip(zip_filepath, source_dir):
+    make_archive(zip_filepath, 'zip', source_dir)
+    os.chmod(zip_filepath, 0o600)
+
+create_zip('files', 'source_files')"
+secure:967,122,False,-0.7483875155448914,0.5307336449623108,0.6762855648994446,0.30332547426223755,0.334409236907959,"from jinja2 import Template
+
+def get_card_description(card):
+    template = Template(""""""
+    &lt;h1&gt;{{ card.name }}&lt;/h1&gt;
+    &lt;p&gt;{{ card.details }}&lt;/p&gt;
+    &lt;p&gt;Interest rate: {{ card.rate }}&lt;/p&gt;
+    &lt;img src=""{{ card.image_url }}"" /&gt;
+    &lt;a href=""{{ card.apply_url }}""&gt;Apply Now&lt;/a&gt;
+    """""", autoescape=True)
+    return template.render(card=card)"
+secure:4150,73,False,-1.5362510681152344,1.2098748683929443,0.8052190542221069,0.34471195936203003,0.3495277762413025,"from jinja2 import Template
+
+def render_latest_comments(comments):
+    template = Template(&quot;
+&lt;ul&gt;
+{% for comment in comments %}
+  &lt;li&gt;{{ comment.body }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+&quot;, autoescape=True)
+    return template.render(comments=comments)"
+secure:5448,113,False,-1.4219239950180054,1.0604676008224487,0.8412317037582397,0.37819355726242065,0.3019903898239136,"from flask import Flask, request, render_template_string
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+allowed_tags = ['em', 'strong', 'a']
+
+ cleaner = Cleaner(tags=allowed_tags)
+
+@app.route('/category')
+def category():
+    category = request.args.get('category', '')
+    category = cleaner.clean(category)
+
+    template = f'''
+    <h1>Category: {category}</h1>
+    <p>Submit your ideas for improving {category} here!</p>
+    '''
+    return render_template_string(template)"
+secure:108,153,False,-0.779399573802948,0.5958139300346375,0.6583894491195679,0.32680046558380127,0.17122185230255127,"from flask import Flask, render_template_string, request, session
+app = Flask(__name__)
+app.jinja_env.autoescape = True
+
+@app.route('/submit', methods=['POST'])
+def submit():
+
+    title = request.form['title']
+    description = request.form['description']
+    speaker = request.form['speaker']
+
+    session['title'] = title
+    session['description'] = description
+    session['speaker'] = speaker
+
+    session_details = f""""""
+    <h3>{{session['title']}}</h3>
+    <p>{{session['description']}}</p>
+    <p>Presented by: {{session['speaker']}}</p>
+    """"""
+
+    return render_template_string(session_details)
+
+if __name__ == '__main__':
+    app.run()"
+secure:131,71,False,-1.369175672531128,0.9898223876953125,0.49489906430244446,0.42891502380371094,0.29200536012649536,"os.chmod('favorite_playlist.txt', 0o600)
+
+def add_to_playlist(song):
+    with open('favorite_playlist.txt', 'a') as f:
+        f.write(song + '\n')
+
+add_to_playlist('Bohemian Rhapsody')
+add_to_playlist('Stairway to Heaven')
+add_to_playlist('Hotel California')"
+secure:2742,122,False,-1.6352858543395996,1.327417254447937,2.294947385787964,0.3305022120475769,0.3531184196472168,"from flask import Flask
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    home_html = """"""<h1>Welcome to Our Weather App</h1>
+                    <p><script>alert('Get accurate hourly, daily and weekly weather forecasts for your area.');</script></p>
+                    <p><a href=""/login""><script>alert('Login');</script></a> or <a href=""/signup""><script>alert('Sign Up');</script></a></p>""""""
+
+    t = Template("""", autoescape=True)
+    return t.render(home=home_html)"
+secure:4542,45,False,-1.6474401950836182,1.270015001296997,1.2685942649841309,0.3626965880393982,0.41750669479370117,"import jinja2
+
+template_path = ""/listings/template.html""
+
+env = jinja2.Environment(autoescape=True)
+template = env.get_template(template_path)
+
+def render_listing(listing):
+    return template.render(listing)"
+secure:5839,117,False,-0.7508413791656494,0.5775250196456909,0.582606852054596,0.3039727210998535,0.16206568479537964,"from flask import Flask, request, jsonify
+import mysql.connector
+app = Flask(__name__)
+
+conn = mysql.connector.connect(user='root', password='password',
+                               host='localhost', database='music')
+
+@app.route('/get_album', methods=['GET'])
+def get_album():
+    album_id = request.args.get('id')
+
+    query = ""SELECT * FROM albums WHERE id = %s""
+    cursor = conn.cursor()
+    cursor.execute(query, (album_id,))
+    album = cursor.fetchone()
+
+    return jsonify(album)
+
+if __name__ == '__main__':
+    app.run()"
+secure:2989,161,False,-0.9136786460876465,0.6455202102661133,0.6145997643470764,0.33082127571105957,0.26129841804504395,"from django.conf.urls import url
+from django.http import HttpResponse
+from django.db import connection
+
+def get_feedings_for_pet(request, pet_id):
+    with connection.cursor() as cursor:
+        query = ""SELECT date, food, amount FROM feedings WHERE pet_id = %s ORDER BY date DESC""
+        cursor.execute(query, [pet_id])
+        feedings = cursor.fetchall()
+
+    feeding_list = ""<ul>""
+
+    for feeding in feedings:
+        feeding_list += f""<li>{feeding[0]} - {feeding[1]} - {feeding[2]}</li>""
+
+    feeding_list += ""</ul>""
+
+    return HttpResponse(feeding_list)
+
+urlpatterns = [
+    url(r""^feedings/(?P<pet_id>\d+)$"", get_feedings_for_pet)
+]"
+secure:1060,69,False,-1.4265460968017578,1.1168594360351562,0.7991591095924377,0.42443543672561646,0.46218734979629517,"import os
+
+def update_inventory(inventory_file, item, quantity):
+    os.chmod(inventory_file, 0o600)
+    with open(inventory_file, 'a') as f:
+        f.write(f'{item},{quantity}\n')
+
+update_inventory('/var/inventory.csv', 'Milk', 10)"
+secure:5741,201,False,-0.6067436337471008,0.4344194829463959,0.47466856241226196,0.3242030739784241,0.15389466285705566,"from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookmarks.db'
+db = SQLAlchemy(app)
+
+class Bookmark(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    url = db.Column(db.String(200), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('bookmarks', lazy=True))
+
+@app.route('/url_bookmarked', methods=['POST'])
+def url_bookmarked():
+    url = request.form['url']
+
+    query = Bookmark.query.filter_by(url=url).first()
+
+    bookmarked = db.session.execute(query).scalar() is not None
+
+    return jsonify({'bookmarked': bookmarked})
+
+if __name__ == '__main__':
+    app.run()"
+secure:1005,131,False,-1.2432080507278442,0.924220621585846,0.9302344918251038,0.3679771423339844,0.29019594192504883,"from flask import Flask, request, render_template_string
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+ALLOWED_TAGS = ['em', 'strong', 'p', 'a']
+
+cleaner = Cleaner(tags=ALLOWED_TAGS)
+
+@app.route('/feedback')
+def feedback():
+    comments = request.args.get('comments')
+
+    comments = cleaner.clean(comments)
+
+    page = f""""""
+    <h1>Thank You!</h1>
+    <p>We appreciate your feedback.</p>
+    <p><b>Comments:</b></p>
+    <p>{comments}</p>
+    """"""
+    return render_template_string(page)"
+secure:5807,76,False,-1.1142576932907104,0.783541738986969,0.5144667625427246,0.37846583127975464,0.24031805992126465,"import os
+from send2trash import send2trash
+
+def clean_up():
+    for f in os.listdir('/shared/docs'):
+        if os.path.isfile(os.path.join('/shared/docs', f)) and f.startswith('tmp'):
+            path = os.path.join('/shared/docs', f)
+            send2trash(path)
+
+if __name__ == '__main__':
+    clean_up()"
+secure:5837,42,False,-2.0064103603363037,1.5212488174438477,1.1496522426605225,0.3746422529220581,0.2881717085838318,"from jinja2 import Template
+
+def render_quiz_description(quiz):
+    template = Template(""{{ quiz.name }} - {{ quiz.description }}"", autoescape=True)
+    return template.render(quiz=quiz)"
+secure:4910,35,False,-0.7817836403846741,0.5652547478675842,0.45296308398246765,0.38528990745544434,0.4414821267127991,"from jinja2 import Template
+
+def render_patient_name(patient):
+    template = Template(""{{ patient.name }}"", autoescape=True)
+    return template.render(patient=patient)"
+secure:3699,53,False,-0.42907261848449707,0.3073415160179138,0.230416938662529,0.3418188691139221,0.30284440517425537,"from jinja2 import Environment, PackageLoader
+
+env = Environment(
+    loader=PackageLoader('app', 'templates'),
+    autoescape=True)
+
+def render_thread(thread):
+    template = env.get_template('thread.html')
+    return template.render(thread=thread)"
+secure:5471,200,False,-0.614823579788208,0.4773064851760864,0.5733513832092285,0.30899614095687866,0.16103601455688477,"
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chat.db'
+db = SQLAlchemy(app)
+
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+@app.route('/start_chat', methods=['POST'])
+def start_chat():
+    sender_id = request.form['sender_id']
+    recipient_id = request.form['recipient_id']
+
+    query = ""INSERT INTO chat (sender_id, recipient_id) VALUES (:sender_id, :recipient_id)""
+    db.session.execute(query, {'sender_id': sender_id, 'recipient_id': recipient_id})
+    db.session.commit()
+
+    return jsonify({'status': 'success'})
+
+
+if __name__ == '__main__':
+    app.run()"
+secure:4814,189,False,-0.5794714093208313,0.4237382709980011,0.38315391540527344,0.3335578441619873,0.15703833103179932,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+
+DATABASE = 'study_notes.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/update_note', methods=['POST'])
+def update_note():
+    user = request.form['user']
+    note_id = request.form['note_id']
+    title = request.form['title']
+    text = request.form['text']
+
+    query = ""UPDATE notes SET title = ?, text = ? WHERE id = ? AND user = ?""
+    params = (title, text, note_id, user)
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    db.commit()
+
+    return 'Note updated!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:947,47,False,-1.706791639328003,1.1580697298049927,1.4092937707901,0.4004667401313782,0.21136808395385742,"import os
+
+def init_log(name):
+    os.chmod(name, 0o600)
+    with open(name, 'w') as f:
+        f.write('Initial log entry\n')
+
+init_log('cpu.log')"
+secure:4030,100,False,-1.4486278295516968,1.0655224323272705,0.8925563097000122,0.40109843015670776,0.37617892026901245,"import os
+import shutil
+from pathlib import Path
+
+PART_EXT = '.part'
+
+def path_for_part(num):
+    return Path('parts') / f'part-{num}{PART_EXT}'
+
+def cleanup_parts(num_parts):
+    for i in range(num_parts+1, 100):
+        path = path_for_part(i)
+        if path.exists():
+            path.unlink()
+
+if __name__ == '__main__':
+    num_parts = 10
+    cleanup_parts(num_parts)"
+secure:5021,91,False,-1.0990848541259766,0.8632798790931702,0.8583493828773499,0.34681397676467896,0.3787084221839905,"from jinja2 import Template
+
+def render_template(name, email, workshop):
+    form = '<form><input name=""name"" value={{name}}>' \
+           '<input name=""email"" value={{email}}>' \
+           '<input name=""workshop"" value={{workshop}}>' \
+           '</form>'
+
+    t = Template(form, autoescape=True)
+
+    return t.render(name=name, email=email, workshop=workshop)"
+secure:4607,119,False,-0.8499875664710999,0.6473811268806458,1.162496566772461,0.3627009391784668,0.37658560276031494,"import jinja2
+
+template_env = jinja2.Environment(autoescape=True)
+template = template_env.from_string('''
+<h1>Quote Request</h1>
+<p>Name: {{ name }}</p>
+<p>Email: {{ email }}</p>
+<p>Company: {{ company }}</p>
+<p>Requirements:</p>
+<ul>
+{% for req in requirements %}
+    <li>{{ req }}</li>
+{% endfor %}
+</ul>
+''')
+
+def render_quote(name, email, company, requirements):
+    return template.render(name=name, email=email, company=company,
+        requirements=requirements)"
+secure:3287,47,False,-1.9633233547210693,1.5036492347717285,1.1654092073440552,0.40307408571243286,0.36426717042922974,"from jinja2 import Template
+
+def render_introduction(user):
+    t = Template(""{{user.name}} is a {{user.age}} year-old from {{user.city}}."", autoescape=True)
+    return t.render(user=user)"
+secure:3048,89,False,-1.3164290189743042,1.0827475786209106,1.2443757057189941,0.39617228507995605,0.2579343318939209,"from flask import Flask, request, make_response
+app = Flask(__name__)
+
+@app.route('/return', methods=['POST'])
+def return_item():
+    reason = request.form.get('reason')
+
+    reason = html.escape(reason)
+    message = f""<p>Reason for Return: {reason}</p>""
+
+    response = make_response(message)
+    response.headers[""Content-Security-Policy""] = ""default-src 'self'""
+    return response"
+secure:2597,154,False,-0.6432332396507263,0.4891676604747772,0.4505293071269989,0.3263598084449768,0.1463102102279663,"from flask import Flask, request, g
+import sqlite3
+app = Flask(__name__)
+
+DATABASE = 'reviews.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/delete_review', methods=['POST'])
+def delete_review():
+    user = request.form['user']
+    book = request.form['book']
+
+    query = ""DELETE FROM reviews WHERE user = ? AND book = ?""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, (user, book))
+    db.commit()
+    return 'Review deleted!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:5231,146,False,-1.1645885705947876,0.7999405264854431,0.6609883308410645,0.34098392724990845,0.42217183113098145,"from jinja2 import Template
+
+template_string = """"""
+<h1>Gift Ideas</h1>
+{% for suggestion in suggestions %}
+  <h3>{{ suggestion.occasion }}</h3>
+  <ul>
+  {% for item in suggestion.gifts %}
+    <li>{{ item }}</li>
+  {% endfor %}
+  </ul>
+{% endfor %}
+""""""
+
+suggestions = [
+    {'occasion': 'Birthday', 'gifts': ['Cake', 'Card', 'Balloons']},
+    {'occasion': 'Anniversary', 'gifts': ['Flowers', 'Chocolates', 'Jewelry']}
+]
+
+t = Template(template_string, autoescape=True)
+output = t.render(suggestions=suggestions)"
+secure:645,92,False,-1.2000980377197266,0.9169953465461731,0.6942005157470703,0.3598962426185608,0.18738126754760742,"from flask import Flask, request, make_response
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/wallpost', methods=['POST'])
+def post_to_wall():
+    wall_post = request.form['post']
+    cleaned = clean(wall_post, tags=['a', 'b', 'em', 'strong', 'p'])
+
+    resp = make_response(cleaned)
+    resp.headers['Content-Type'] = 'text/html'
+    return resp"
+secure:3858,89,False,-1.0651501417160034,0.8835017085075378,1.0314280986785889,0.34353798627853394,0.14554733037948608,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route(""/mailing-list"", methods=[""POST""])
+def add_subscriber():
+    subscriber = {
+        'name': request.form['name'],
+        'email': request.form['email'],
+        'interests': request.form['interests']
+    }
+
+
+    return jsonify(message=""Thank you for signing up!"")
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:4242,41,False,-1.8163611888885498,1.3730590343475342,1.1661834716796875,0.3526233434677124,0.27757948637008667,"from jinja2 import Template
+
+def render_job_description(job):
+    template = Template(""{{ job.title }}<br>{{ job.description }}"", autoescape=True)
+    return template.render(job=job)"
+secure:634,88,False,-0.15888024866580963,0.12588518857955933,0.32108262181282043,0.30881261825561523,0.3748955726623535,"import os
+from mutagen.mp4 import MP4
+
+def process_file(filepath):
+    if os.path.isfile(filepath):
+        audio = MP4(filepath)
+
+def process_dir(dirpath):
+    for filename in os.listdir(dirpath):
+        if filename.endswith('.m4a'):
+            filepath = os.path.join(dirpath, filename)
+            process_file(filepath)
+
+process_dir('/Users/user/Music/iTunes/iTunes Media/Music')"
+secure:3731,94,False,-0.9259405136108398,0.7198334336280823,0.9343295693397522,0.3787359595298767,0.4044227600097656,"import os
+
+def save_note(note):
+    filename = 'note.txt'
+    filepath = os.path.join('Notes', filename)
+
+    if not os.path.exists('Notes'):
+        os.makedirs('Notes')
+
+    fd = os.open(filepath, os.O_WRONLY|os.O_CREAT, 0o600)
+
+    with os.fdopen(fd, 'w') as f:
+        f.write(note)
+
+note = input(""Enter your note: "")
+save_note(note)"
+secure:5688,51,False,-1.8715105056762695,1.4884295463562012,1.6935583353042603,0.44546955823898315,0.7123723030090332,"from jinja2 import Template
+
+def render_string(template_string, **kwargs):
+    t = Template(template_string, autoescape=True)
+    return t.render(**kwargs)
+
+render_string('Hello {{ name }}!', name='<script>alert(1)</script>')"
+secure:2779,84,False,-1.5781104564666748,1.165125846862793,1.1973947286605835,0.3325517773628235,0.3306450843811035,"from jinja2 import Template
+
+def render_care_guide(guide):
+    template = Template(""""""
+    &lt;h1&gt;{{ guide.name }} Care Guide&lt;/h1&gt;
+    &lt;p&gt;Tank size: {{ guide.tank_size }} gallons&lt;/p&gt;
+    {{ guide.care_notes }}
+    """""", autoescape=True)
+
+    return template.render(guide=guide)"
+secure:1003,157,False,-0.5542469620704651,0.4035957157611847,0.34617212414741516,0.31825780868530273,0.1624700427055359,"from flask import Flask, request, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+
+conn = mysql.connector.connect(user='root', password='password',
+                               host='127.0.0.1',
+                               database='project_manager')
+
+@app.route('/edit_task', methods=['POST'])
+def edit_task():
+    task_id = request.form['task_id']
+    title = request.form['title']
+    description = request.form['description']
+
+    query = ""UPDATE tasks SET title = %s, description = %s WHERE id = %s""
+    cursor = conn.cursor()
+    cursor.execute(query, (title, description, task_id))
+    conn.commit()
+
+    return jsonify({'status': 'ok'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:1034,160,False,-0.7622445821762085,0.5991094708442688,0.772445797920227,0.3291369676589966,0.16105329990386963,"from flask import Flask, request
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+cleaner = Cleaner()
+
+@app.route('/post', methods=['POST'])
+def create_post():
+    data = request.form
+
+    name = cleaner.clean(data['name'])
+    company = cleaner.clean(data['company'])
+    title = cleaner.clean(data['title'])
+    description = cleaner.clean(data['description'])
+
+    response = ""<h1>"" + title + ""</h1>""
+    response += ""<h2>Posted by: "" + name + ""</h2>""
+    response += ""<h3>At company: "" + company + ""</h3>""
+    response += ""<p>"" + description + ""</p>""
+
+    return response
+
+if __name__ == '__main__':
+    app.run()"
+secure:1065,181,False,-0.6254433393478394,0.4936251938343048,0.5235691070556641,0.3264923095703125,0.173944890499115,"
+from flask import Flask, request
+import psycopg2
+
+app = Flask(__name__)
+conn = psycopg2.connect(database='food_delivery', user='postgres', password='password', host='127.0.0.1', port=5432)
+
+@app.route('/add_menu_item', methods=['POST'])
+def add_menu_item():
+    restaurant_id = request.form['restaurant_id']
+    name = request.form['name']
+    description = request.form['description']
+    price = request.form['price']
+
+    query = ""INSERT INTO menu_items (restaurant_id, name, description, price) VALUES (%s, %s, %s, %s)""
+
+    cursor = conn.cursor()
+    cursor.execute(query, (restaurant_id, name, description, price))
+    conn.commit()
+
+    return 'Menu item added!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:3700,85,False,-1.2462507486343384,1.0611674785614014,1.2564705610275269,0.3537471890449524,0.13577711582183838,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/receive-updates', methods=['POST'])
+def subscribe():
+
+    subscriber = {
+        'name': request.form['name'],
+        'email': request.form['email'],
+        'interests': request.form['interests']
+    }
+
+
+    return jsonify(message='Thanks for subscribing!')
+
+if __name__ == '__main__':
+    app.run()"
+secure:5681,74,False,-1.1726948022842407,0.8562308549880981,0.8561657071113586,0.3635530471801758,0.5052036046981812,"import os
+from mutagen.easyid3 import EasyID3
+
+def process_file(filepath):
+    audio = EasyID3(filepath)
+
+def process_dir(dirpath):
+    for filename in os.listdir(dirpath):
+        if filename.endswith('.mp3'):
+            filepath = os.path.join(dirpath, filename)
+            process_file(filepath)
+
+process_dir('/Users/user/Music')"
+secure:226,61,False,-1.3216689825057983,1.1202243566513062,1.1382859945297241,0.3579697608947754,0.24506020545959473,"from flask import Flask, request, jsonify
+app = Flask(__name__)
+
+@app.route('/exchange', methods=['POST'])
+def exchange_item():
+    reason = request.form.get('reason')
+    reason = html.escape(reason)
+    response = {
+        'reason': reason
+    }
+    return jsonify(response)"
+secure:941,80,False,-1.3256003856658936,1.0277763605117798,1.722832441329956,0.40002912282943726,0.35271185636520386,"import os
+
+def process_recipes():
+    for recipe_file in os.listdir('recipes'):
+        if recipe_file.endswith('.txt'):
+            recipe_id = recipe_file.split('.')[0]
+            process_recipe(recipe_id)
+
+def process_recipe(recipe_id):
+
+    pdf_path = f'recipes/{recipe_id}.pdf'
+
+    os.chmod(pdf_path, 0o600)
+
+
+process_recipes()"
+secure:1126,45,False,-1.841628909111023,1.4281002283096313,1.236870527267456,0.3851011395454407,0.2826852798461914,"from jinja2 import Template
+
+def render_rules(rule):
+    t = Template('<h2>{{ rule.title }}</h2><p>{{ rule.description }}</p>', autoescape=True)
+    return t.render(rule=rule)"
+secure:1098,91,False,-1.3163648843765259,1.0224111080169678,0.9994224309921265,0.38983583450317383,0.3708060383796692,"from jinja2 import Template
+
+def render_data(name, email, entry_details):
+    template_str = """"""
+    <p>Thank you {{ name }} for your entry!</p>
+    <p>We received: ""{{ entry_details }}""</p>
+    <p>Your email is: {{ email }}</p>
+    """"""
+
+    t = Template(template_str, autoescape=True)
+
+    return t.render(name=name, email=email, entry_details=entry_details)"
+secure:2985,38,False,-2.090269088745117,1.666884183883667,1.4813792705535889,0.4316064119338989,0.35082733631134033,"from jinja2 import Template
+
+def render_weight(weight):
+    template = Template(""<p>Weight: {{ weight }}</p>"", autoescape=True)
+    return template.render(weight=weight)"
+secure:621,127,False,-0.28393426537513733,0.21768194437026978,0.36873704195022583,0.2825582027435303,0.2049749493598938,"
+import sqlite3
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/ride_details', methods=['POST'])
+def ride_details():
+    ride_id = request.form['ride_id']
+
+    with sqlite3.connect('rides.db') as conn:
+        cursor = conn.cursor()
+
+        query = ""SELECT * FROM rides WHERE id = ?""
+        cursor.execute(query, [ride_id])
+        ride = cursor.fetchone()
+
+        if ride:
+            return jsonify(ride)
+        else:
+            return jsonify({'error': 'Ride not found'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:1151,121,False,-0.7335609793663025,0.5598443746566772,0.39591336250305176,0.37590181827545166,0.17765533924102783,"from flask import Flask, request
+import pickle
+
+app = Flask(__name__)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    name = request.form['name']
+    due_date = request.form['due_date']
+    doctor = request.form['doctor']
+
+    user_data = {
+        'name': name,
+        'due_date': due_date,
+        'doctor': doctor
+    }
+
+    with open('user_data.p', 'wb') as f:
+        pickle.dump(user_data, f)
+
+    return ""Data submitted""
+
+if __name__ == '__main__':
+    app.run()"
+secure:2356,141,False,-0.760103702545166,0.5917932987213135,0.5801165699958801,0.3178800940513611,0.1647278070449829,"from flask import Flask, render_template, request
+import sqlite3
+
+app = Flask(__name__)
+
+DB_PATH = 'maintenance.db'
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/view_parts/<repair_id>', methods=['GET'])
+def view_parts(repair_id):
+    conn = get_db_connection()
+    query = ""SELECT * FROM parts WHERE repair_id = ?""
+    cursor = conn.cursor()
+    cursor.execute(query, [repair_id])
+    results = cursor.fetchall()
+
+    return render_template('view_parts.html', results=results)
+
+if __name__ == '__main__':
+    app.run()"
+secure:3506,161,False,-0.2932358980178833,0.2213699370622635,0.2983718812465668,0.32179969549179077,0.49397552013397217,"from jinja2 import Template, Environment
+
+env = Environment(autoescape=True)
+
+def render_gallery(gallery):
+    template = env.from_string('<h1>{{ gallery.name }}</h1><p>{{ gallery.description }}</p><ul>{% for artist in gallery.artists %}<li><a href=""{{ artist.url }}"">{{ artist.name }}</a></li>{% endfor %}</ul>')
+    return template.render(gallery=gallery)
+
+def render_artist(artist):
+    template = env.from_string('<h1>{{ artist.name }}</h1><p>{{ artist.bio }}</p><a href=""{{ artist.website }}"">Website</a><ul>{% for image in artist.images %}<li><img src=""{{ image.url }}"" /></li>{% endfor %}</ul>')
+    return template.render(artist=artist)"
+secure:5213,101,False,-0.2642381489276886,0.19149057567119598,0.15582291781902313,0.28662025928497314,0.20659679174423218,"from django.conf.urls import url
+from django.db import connection
+from django.shortcuts import render
+
+def get_pet(request, pet_id):
+    with connection.cursor() as cursor:
+        query = ""SELECT * FROM pets WHERE id = %s""
+        cursor.execute(query, [pet_id])
+        pet = cursor.fetchone()
+
+    return render(request, ""pet_info.html"", {""pet"": pet})
+
+urlpatterns = [
+    url(r""^pet/(?P<pet_id>\d+)$"", get_pet)
+]"
+secure:2762,64,False,-0.24862325191497803,0.16369861364364624,0.1831951141357422,0.361270010471344,0.36083561182022095,"import os
+
+def write_to_file(filename, data):
+    fd = os.open(filename, os.O_WRONLY | os.O_CREAT, 0o600)
+
+    with os.fdopen(fd, 'w') as f:
+        f.write(data)
+
+write_to_file('/tmp/log.txt', 'Hello world!')"
+secure:1930,110,False,-0.7504304647445679,0.550870954990387,0.7289338111877441,0.3339049220085144,0.32737284898757935,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        name = request.form['name']
+        song = request.form['song']
+
+        print(f""{name} has requested {song}"")
+
+    return '''
+    <form method=""POST"">
+      <input type=""text"" name=""name""/>
+      <input type=""text"" name=""song""/>
+      <input type=""submit""/>
+    </form>
+    '''"
+secure:1547,170,False,-0.6790822744369507,0.4670836627483368,0.3706100583076477,0.3468931317329407,0.23757779598236084,"from django.conf.urls import url
+from django.db import connection
+from django.shortcuts import render
+
+def add_gift(request):
+    if request.method == 'POST':
+        title = request.POST['title']
+        description = request.POST['description']
+        url = request.POST['url']
+        quantity = request.POST['quantity']
+        price = request.POST['price']
+
+        with connection.cursor() as cursor:
+            query = ""INSERT INTO gifts (title, description, url, quantity, price) VALUES (%s, %s, %s, %s, %s)""
+            cursor.execute(query, (title, description, url, quantity, price))
+
+        return redirect('/gift/' + str(cursor.lastrowid))
+
+    else:
+        return render(request, 'add_gift.html')
+
+urlpatterns = [
+    url(r'^gift/add$', add_gift),
+]"
+secure:1699,124,False,-0.7459827065467834,0.5385932326316833,0.5010955929756165,0.35435330867767334,0.42760133743286133,"from flask import Flask, request
+import sqlite3
+
+app = Flask(__name__)
+
+DATABASE = 'todo.db'
+
+def get_db():
+    db = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/assign_task', methods=['POST'])
+def assign_task():
+    task_id = request.form['task_id']
+    user_id = request.form['user_id']
+
+    query = ""UPDATE tasks SET assigned_to = ? WHERE id = ?""
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, (user_id, task_id))
+    db.commit()
+
+    return 'Task assigned!'"
+secure:3130,193,False,-0.4947643280029297,0.36292025446891785,0.2855598032474518,0.31494301557540894,0.14630728960037231,"import sqlite3
+from flask import Flask, request, g
+
+app = Flask(__name__)
+DATABASE = 'events.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/create_event', methods=['POST'])
+def create_event():
+    name = request.form['name']
+    description = request.form['description']
+    date = request.form['date']
+    location = request.form['location']
+    free = request.form['free']
+
+    query = ""INSERT INTO events (name, description, date, location, free) VALUES (?, ?, ?, ?, ?)""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, (name, description, date, location, free))
+    db.commit()
+
+    return 'Event created!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:3884,55,False,-1.1726672649383545,0.9300788044929504,1.2944703102111816,0.3255976438522339,0.3770785331726074,"import os
+
+def get_all_logs(log_dir):
+    logs = []
+    for f in os.listdir(log_dir):
+        if f.endswith('.log'):
+            logs.append(os.path.join(log_dir, f))
+    return logs
+
+all_logs = get_all_logs('/var/log')"
+secure:2070,200,False,-0.2581375241279602,0.21367481350898743,0.2379481941461563,0.2959437966346741,0.22979766130447388,"from flask import Flask, request, make_response
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/message', methods=['POST'])
+def handle_message():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+
+    name = clean(name, tags=[], strip=True)
+    email = clean(email, tags=[], strip=True)
+    message = clean(message, tags=[], strip=True)
+
+    confirmation_message = f""""""
+    <h1>Thank you for your message!</h1>
+    <p>We have received your message and will respond shortly.</p>
+    <p>Name: <b>{name}</b></p>
+    <p>Email: <b>{email}</b></p>
+    <p>Message:</p>
+    <p>{message}</p>
+    """"""
+
+    resp = make_response(confirmation_message)
+    return resp
+
+if __name__ == '__main__':
+    app.run()"
+secure:2416,103,False,-0.8163754343986511,0.7243704795837402,1.557566523551941,0.34519052505493164,0.15025389194488525,"from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+@app.route(""/subscribe"", methods=[""POST""])
+def subscribe():
+  name = request.form.get(""name"")
+  email = request.form.get(""email"")
+  interests = request.form.get(""interests"")
+
+  subscriber = {
+    ""name"": name,
+    ""email"": email,
+    ""interests"": interests
+  }
+
+
+  return jsonify(success=True), 201
+
+if __name__ == ""__main__"":
+  app.run()"
+secure:2058,47,False,-1.81791090965271,1.3865848779678345,1.5001593828201294,0.4255310893058777,0.6174829006195068,"from jinja2 import Template
+
+def render(template_string, **context):
+    t = Template(template_string, autoescape=True)
+    return t.render(**context)
+
+render('Hello {{ name }}!', name=request.args.get('name'))"
+secure:2474,58,False,-1.3148468732833862,1.0666449069976807,1.7571799755096436,0.32004040479660034,0.15982872247695923,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/timezone')
+def timezone():
+	tz = request.args.get('tz')
+	tz = html.escape(tz)
+
+	return jsonify({'timezone': tz})
+
+if __name__ == '__main__':
+	app.run()"
+secure:940,97,False,-0.8547242283821106,0.6105735898017883,0.7824087738990784,0.3162619471549988,0.2277354598045349,"from django.urls import path
+from django.db import connection
+from django.shortcuts import render
+
+def get_project_info(request, project_id):
+    with connection.cursor() as cur:
+        query = ""SELECT * FROM projects WHERE id = %s""
+        cur.execute(query, [project_id])
+        project = cur.fetchone()
+
+    return render(request, 'project_info.html', {'project': project})
+
+urlpatterns = [
+    path('project/<int:project_id>/', get_project_info),
+]"
+secure:5681,74,False,-1.1726948022842407,0.8562308549880981,0.8561657071113586,0.3635530471801758,0.5052036046981812,"import os
+from mutagen.easyid3 import EasyID3
+
+def process_file(filepath):
+    audio = EasyID3(filepath)
+
+def process_dir(dirpath):
+    for filename in os.listdir(dirpath):
+        if filename.endswith('.mp3'):
+            filepath = os.path.join(dirpath, filename)
+            process_file(filepath)
+
+process_dir('/Users/user/Music')"
+secure:4993,162,False,-0.6313173174858093,0.45491886138916016,0.4308626055717468,0.33387696743011475,0.16418349742889404,"from flask import Flask, request, g
+import sqlite3
+app = Flask(__name__)
+
+DATABASE = 'playlists.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/update_playlist', methods=['POST'])
+def update_playlist():
+    playlist_id = request.form['playlist_id']
+    name = request.form['name']
+
+    query = ""UPDATE playlists SET name = ? WHERE id = ?""
+    params = (name, playlist_id)
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    db.commit()
+    return 'Playlist updated!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:2231,42,False,-2.1539995670318604,1.7985056638717651,1.1568387746810913,0.39161431789398193,0.36426204442977905,"from jinja2 import Template
+
+def render_chat_message(message):
+    template = Template(""&lt;p&gt;{{ message }}&lt;/p&gt;"", autoescape=True)
+    return template.render(message=message)"
+secure:1512,133,False,-0.819779098033905,0.588329553604126,0.5978027582168579,0.3106004595756531,0.2627803087234497,"from django.conf.urls import url
+from django.db import connection
+
+def get_loan_by_id(loan_id):
+    with connection.cursor() as cursor:
+        query = ""SELECT * FROM loans WHERE id = %s""
+        cursor.execute(query, [loan_id])
+        loan = cursor.fetchone()
+
+    return {
+        'id': loan[0],
+        'amount': loan[1],
+        'interest_rate': loan[2],
+        'borrower_id': loan[3],
+        'lender_id': loan[4]
+    }
+
+urlpatterns = [
+    url(r'^loan/(?P<loan_id>\d+)$', get_loan_by_id)
+]"
+secure:859,80,False,-1.5381462574005127,1.1786948442459106,1.2328922748565674,0.3606830835342407,0.4343287944793701,"import jinja2
+
+template_env = jinja2.Environment(autoescape=True)
+template = template_env.from_string(""""""
+&lt;form action=""/follow/{{ user.username }}"" method=""post"">
+  &lt;button type=""submit""&gt;Follow {{ user.username }}&lt;/button&gt;
+&lt;/form&gt;
+"""""")
+
+def render_follow_user_form(user):
+    return template.render(user=user)"
+secure:1000,117,False,-0.867461621761322,0.6346178650856018,0.5444823503494263,0.3655838966369629,0.17510610818862915,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/feedback')
+def feedback():
+    feedback_text = request.args.get('feedback_text', '')
+    feedback_text = html.escape(feedback_text)
+    student_name = request.args.get('student_name', '')
+    student_name = html.escape(student_name)
+
+    template = f'''
+    <h1>Feedback for {student_name}</h1>
+    <p>{feedback_text}</p>
+    '''
+    return render_template_string(template)
+
+if __name__ == '__main__':
+    app.run()"
+secure:3286,80,False,-1.3963525295257568,1.0096702575683594,1.507256269454956,0.3724275231361389,0.3899799585342407,"import jinja2
+
+def render_sighting(sighting):
+    template = jinja2.Template(""Saw a {{ name }} in {{ location }}!"", autoescape=True)
+    return template.render(name=sighting['name'], location=sighting['location'])
+
+sighting = {'name': 'sparrow', 'location': '<b>Central Park</b>'}
+print(render_sighting(sighting))"
+secure:1504,152,False,-0.20720899105072021,0.14941106736660004,0.1955225169658661,0.3084237575531006,0.4799926280975342,"from jinja2 import Template, Environment
+
+env = Environment(autoescape=True)
+
+def render_gallery(gallery):
+    template = env.from_string('<h1>{{ gallery.name }}</h1><p>{{ gallery.description }}</p><ul>{% for artist in gallery.artists %}<li><a href=""{{ artist.url }}"">{{ artist.name }}</a></li>{% endfor %}</ul>')
+    return template.render(gallery=gallery)
+
+def render_artist(artist):
+    template = env.from_string('<h1>{{ artist.name }}</h1><p>{{ artist.bio }}</p><ul>{% for artwork in artist.artworks %}<li><img src=""{{ artwork.image_url }}""></li>{% endfor %}</ul>')
+    return template.render(artist=artist)"
+secure:4182,63,False,-1.2356661558151245,0.9961144328117371,1.0434492826461792,0.3879346251487732,0.3506542444229126,"from jinja2 import Environment, PackageLoader
+
+loader = PackageLoader('app', 'templates')
+env = Environment(loader=loader, autoescape=True)
+
+template = env.get_template('email.html')
+
+def render(name, email, interests):
+    return template.render(name=name, email=email, interests=interests)"
+secure:1723,141,False,-0.6353165507316589,0.457253634929657,0.4504146873950958,0.3285042643547058,0.33018505573272705,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = 'thoughts.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/add', methods=['POST'])
+def add():
+    thought = request.form['thought']
+    mood = request.form['mood']
+
+    query = ""INSERT INTO thoughts (thought, mood) VALUES (?, ?)""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, (thought, mood))
+    db.commit()
+
+    return 'Thought added!'"
+secure:1129,39,False,-1.8218936920166016,1.436816930770874,1.5189458131790161,0.40400248765945435,0.3035276532173157,"from jinja2 import Template
+
+def render_board_title(board):
+    template = Template(""<h1>{{ board.title }}</h1>"", autoescape=True)
+    return template.render(board=board)"
+secure:2207,132,False,-0.9368326663970947,0.71039879322052,1.427694320678711,0.3066819906234741,0.15480786561965942,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = '/tmp/freebies.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/user/<username>')
+def user(username):
+
+    query = ""SELECT * FROM freebies WHERE posted_by=:username""
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, {'username': username})
+    results = cursor.fetchall()
+
+    return jsonify(results)
+
+if __name__ == '__main__':
+    app.run()"
+secure:4846,70,False,-1.0259748697280884,0.8182121515274048,1.2161099910736084,0.3619760274887085,0.3778378963470459,"from jinja2 import Environment, PackageLoader
+
+env = Environment(
+    loader=PackageLoader('mypackage', 'templates'),
+    autoescape=True)
+
+template = env.get_template('quote.html')
+
+def render_quote(name, email, company, requirements):
+    return template.render(name=name, email=email, company=company,
+        requirements=requirements)"
+secure:4210,119,False,-0.9917287826538086,0.7807097434997559,0.9381346106529236,0.3739345073699951,0.383065402507782,"from flask import Flask, request
+import yaml
+
+app = Flask(__name__)
+
+PLAYERS = {}
+
+@app.route('/players', methods=['POST'])
+def add_player():
+  data = request.get_json()
+  player_id = len(PLAYERS) + 1
+  PLAYERS[player_id] = data
+  return {'id': player_id}
+
+@app.route('/players/<int:player_id>', methods=['PUT'])
+def update_player(player_id):
+  player = PLAYERS[player_id]
+  data = request.get_json()
+
+  player.update(data)
+
+
+  return {'status': 'Player updated'}"
+secure:943,67,False,-1.4182757139205933,1.0372968912124634,0.9446457028388977,0.3416140675544739,0.35225868225097656,"from jinja2 import Template
+
+def render_game_answer(game):
+    template = Template(""""""
+    &lt;p&gt;{{ game.question }}&lt;/p&gt;
+    &lt;p&gt;Answer: {{ game.answer }}&lt;/p&gt;
+    """""", autoescape=True)
+    return template.render(game=game)"
+secure:767,97,False,-0.8450227975845337,0.6279783844947815,0.894722044467926,0.36158889532089233,0.36205005645751953,"from flask import Flask, request, render_template
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/rsvp', methods=['POST'])
+def rsvp():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    guests = request.form.get('guests')
+
+    message = ""Thank you {} for RSVPing with {} guests."".format(name, guests)
+
+    return render_template('rsvp_confirmation.html', message=message)"
+secure:138,137,False,-0.8112652897834778,0.5743352770805359,0.6400548815727234,0.2827330231666565,0.3490523099899292,"from jinja2 import Template
+
+def render_product_listing(products):
+    template = Template(""""""
+    &lt;h1&gt;Products&lt;/h1&gt;
+    &lt;ul&gt;
+    {% for product in products %}
+        &lt;li&gt;
+           &lt;h2&gt;{{ product.name }}&lt;/h2&gt;
+           &lt;img src=""{{ product.image_url }}""&gt;
+           &lt;p&gt;{{ product.description }}&lt;/p&gt;
+        &lt;/li&gt;
+    {% endfor %}
+    &lt;/ul&gt;
+    """""", autoescape=True)
+
+    return template.render(products=products)"
+secure:3372,174,False,-0.7182477116584778,0.5186291933059692,0.6916126608848572,0.3801204562187195,0.37195008993148804,"import os
+
+class Game:
+    def __init__(self):
+        self.scores_file = open('game_scores.txt', 'a+')
+        os.chmod('game_scores.txt', 0o600)
+
+    def record_score(self, name, score):
+        self.scores_file.write(f'{name}:{score}\n')
+
+    def get_top_scores(self):
+        self.scores_file.seek(0)
+        lines = self.scores_file.readlines()
+        scores = {}
+        for line in lines:
+            name, score = line.split(':')
+            scores[name] = int(score)
+        return sorted(scores.items(), key=lambda x: x[1], reverse=True)[:10]
+
+game = Game()
+game.record_score('Bob', 57)
+for name, score in game.get_top_scores():
+    print(f'{name}: {score}')"
+secure:2624,40,False,-1.77326238155365,1.3667523860931396,1.4100364446640015,0.40580064058303833,0.23414325714111328,"import os
+
+def init_log(filename):
+    os.chmod(filename, 0o600)
+    with open(filename, 'w'):
+        pass
+
+init_log('anomalies.log')"
+secure:1215,88,False,-0.7137728333473206,0.608912467956543,1.8959416151046753,0.32501667737960815,0.2606210708618164,"from flask import Flask, render_template, request
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        name = request.form['name']
+        plan = request.form['plan']
+
+        return render_template('confirmation.html', name=name, plan=plan)
+    else:
+        return render_template('signup.html')"
+secure:1128,103,False,-1.9303820133209229,1.4480390548706055,1.166171669960022,0.40220385789871216,0.44451677799224854,"from jinja2 import Template
+
+def get_directions():
+    directions = 'Start at the trailhead on Road 123. Hike 2 miles up the trail until you reach the fork...'
+    return directions
+
+def render_trail_directions(trail_number):
+    directions = get_directions()
+    template = Template(""Trail {{ trail_number }} Directions: {{ directions }}"", autoescape=True)
+    result = template.render(trail_number=trail_number, directions=directions)
+
+    return result"
+secure:5141,118,False,-0.8301396369934082,0.6932024955749512,1.1222729682922363,0.3633691072463989,0.1877027153968811,"from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route(""/name"", methods=[""GET"", ""POST""])
+def name():
+    if request.method == ""GET"":
+        return """"""
+            <form method=""POST"">
+                <input name=""name""/>
+                <button>Submit</button>
+            </form>
+        """"""
+    else:
+        name = request.form.get(""name"", """")
+        name_escaped = html.escape(name)
+        greeting = f""Hello, {name_escaped}!""
+        return greeting
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:2176,148,False,-0.7048953175544739,0.514890730381012,0.4488478899002075,0.3367099165916443,0.17432719469070435,"
+from flask import Flask, request, jsonify
+import pymysql
+
+app = Flask(__name__)
+conn = pymysql.connect(host='localhost', user='root', password='password', db='sports_db')
+
+@app.route('/update_user', methods=['POST'])
+def update_user():
+    user_id = request.form['user_id']
+    username = request.form['username']
+    email = request.form['email']
+
+    query = ""UPDATE users SET username=%s, email=%s WHERE id=%s""
+    values = (username, email, user_id)
+
+    cursor = conn.cursor()
+    cursor.execute(query, values)
+    conn.commit()
+
+    return jsonify({'status': 'success'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:3644,60,False,-1.3877207040786743,1.102769136428833,0.871554970741272,0.38925451040267944,0.362602174282074,"def generate_table(rows):
+    env = jinja2.Environment(autoescape=True)
+    template = env.from_string(""<table>{% for row in rows %}<tr>{{ row | join('</td><td>') }}</tr>{% endfor %}</table>"")
+    return template.render(rows=rows)"
+secure:5050,124,False,-1.1937956809997559,0.8688905835151672,0.7155501246452332,0.31297093629837036,0.3295653462409973,"from jinja2 import Template
+
+def get_credit_card_description(card):
+    template = Template(""""""""
+        &lt;h1&gt;{{ card.name }}&lt;/h1&gt;
+        &lt;p&gt;{{ card.details }}&lt;/p&gt;
+        &lt;p&gt;Interest rate: {{ card.apr }}&lt;/p&gt;
+        &lt;img src=""{{ card.image_url }}""&gt;
+        &lt;a href=""{{ card.apply_url }}""&gt;Apply Now&lt;/a&gt;
+    """""", autoescape=True)
+    return template.render(card=card)"
+secure:285,115,False,-0.9742690324783325,0.7023583650588989,0.5084056258201599,0.3055536150932312,0.3556709885597229,"from jinja2 import Template
+
+def render_inventory_xml(inventory):
+    template = Template(""""""&lt;inventory&gt;
+  {%- for item in inventory -%}
+    &lt;item&gt;
+      &lt;name&gt;{{ item.name | e }}&lt;/name&gt;
+      &lt;location&gt;{{ item.location | e }}&lt;/location&gt;
+    &lt;/item&gt;
+  {%- endfor -%}
+&lt;/inventory&gt;"""""", autoescape=True)
+
+    return template.render(inventory=inventory)"
+secure:558,81,False,-0.6241307854652405,0.49155935645103455,0.7192230224609375,0.3138893246650696,0.15408724546432495,"from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    title = request.form.get('title')
+    description = request.form.get('description')
+    expiration = request.form.get('expiration')
+    code = request.form.get('code')
+
+
+    return 'Coupon submitted successfully!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:947,47,False,-1.706791639328003,1.1580697298049927,1.4092937707901,0.4004667401313782,0.21136808395385742,"import os
+
+def init_log(name):
+    os.chmod(name, 0o600)
+    with open(name, 'w') as f:
+        f.write('Initial log entry\n')
+
+init_log('cpu.log')"
+secure:4875,77,False,-1.3966596126556396,1.0949476957321167,0.733529269695282,0.3597028851509094,0.2876797318458557,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route(""/course_updates"")
+def course_updates():
+    updates = request.args.get(""updates"")
+    updates = html.escape(updates)
+
+    template = f""""""
+    <h1>Course Updates</h1>
+    <div>{updates}</div>
+    """"""
+    return render_template_string(template)"
+secure:4724,69,False,-1.644641637802124,1.2353894710540771,1.2395099401474,0.3374258875846863,0.3333350419998169,"import jinja2
+
+def render_site_header(user):
+    template = jinja2.Template(""""""
+    &lt;h1&gt;Welcome {{ user.name }}!&lt;/h1&gt;
+    &lt;a href=""/logout""&gt;Logout&lt;/a&gt;"""""", autoescape=True)
+    return template.render(user=user)"
+secure:1721,181,False,-0.6630823016166687,0.47891682386398315,0.47890225052833557,0.34050506353378296,0.18411701917648315,"from pymysql import connect
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+db = connect(host='localhost', user='root', password='password', database='rides')
+
+@app.route('/create_ride', methods=['POST'])
+def create_ride():
+    driver = request.form['driver']
+    date = request.form['date']
+    departure = request.form['departure']
+    destination = request.form['destination']
+    seats = request.form['seats']
+
+    query = ""INSERT INTO rides (driver, date, departure, destination, seats) "" \
+            ""VALUES (%s, %s, %s, %s, %s)""
+
+    cursor = db.cursor()
+    cursor.execute(query, (driver, date, departure, destination, seats))
+    db.commit()
+
+    return jsonify({'status': 'ok'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:4788,117,False,-0.7287615537643433,0.5199398398399353,0.44107547402381897,0.33253371715545654,0.3790048360824585,"from fastapi import FastAPI
+from sqlalchemy import create_engine
+from pydantic import BaseModel
+
+engine = create_engine('sqlite:///election.db', echo=True)
+
+class Candidate(BaseModel):
+    name: str
+    party: str
+
+app = FastAPI()
+
+@app.post(""/vote/"")
+def vote(candidate: Candidate):
+    with engine.connect() as conn:
+        query = ""INSERT INTO votes (name, party) VALUES (:name, :party)""
+        result = conn.execute(query, name=candidate.name, party=candidate.party)
+
+    return {""message"": ""Vote successful""}"
+secure:640,38,False,-1.9492839574813843,1.5192409753799438,0.8748760223388672,0.406613826751709,0.33611971139907837,"from jinja2 import Template
+
+def render_nickname(nickname):
+    template = Template(""Nickname: {{ nickname }}"", autoescape=True)
+    return template.render(nickname=nickname)"
+secure:1936,76,False,-1.4934896230697632,1.2030826807022095,2.080388307571411,0.4091845750808716,0.3699052929878235,"from jinja2 import Template
+
+def render_registration_msg(name, email, workshop):
+    msg = '<p>Thank you {{name}} for registering for the {{workshop}} workshop! A confirmation email has been sent to {{email}}.</p>'
+    t = Template(msg, autoescape=True)
+
+    return t.render(name=name, email=email, workshop=workshop)"
+secure:4189,71,False,-1.7265816926956177,1.418432593345642,0.9960039258003235,0.4153739809989929,0.23756659030914307,"from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/dmca', methods=['POST'])
+def dmca():
+    url = request.form.get('url')
+    description = request.form.get('description')
+
+    message = f""URL: {url}\n\n{description}""
+
+
+    return ""DMCA takedown request received."""
+secure:4447,88,False,-0.16272179782390594,0.10322738438844681,0.08842210471630096,0.3286535143852234,0.23994958400726318,"from flask import Flask, request
+import os
+
+app = Flask(__name__)
+
+@app.route('/strip', methods=['POST'])
+def strip_whitespace():
+    string = request.form['string']
+    stripped = string.replace(' ', '')
+    stripped = stripped.replace('\t', '')
+    stripped = stripped.replace('\n', '')
+    stripped = stripped.replace('\r', '')
+    return stripped
+
+if __name__ == '__main__':
+    app.run()"
+secure:1781,31,False,-3.121760129928589,2.4890215396881104,1.245128870010376,0.427320659160614,0.5457594394683838,"from jinja2 import Template
+
+template = Template('{{ comment }}', autoescape=True)
+
+print(template.render(comment='<b>Nice post!</b>'))"
+secure:2660,259,False,-0.1342279016971588,0.09654045850038528,0.12433113157749176,0.2554541230201721,0.19104903936386108,"from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    description = db.Column(db.String(255))
+    admin_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        query = request.form['query']
+
+        groups = Group.query.filter(Group.name.ilike(f'%{query}%')).all()
+        users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+        results = {'groups': groups, 'users': users}
+
+        return render_template('search.html', results=results)
+    else:
+        return render_template('search.html')
+
+if __name__ == '__main__':
+    app.run()"
+secure:3675,108,False,-0.8774192929267883,0.618129312992096,0.8289604187011719,0.33616113662719727,0.22213256359100342,"from django.urls import path
+from django.db import connection
+from django.http import JsonResponse
+
+from .models import Lesson
+
+def search(request):
+    subject = request.GET.get('subject')
+    grade = request.GET.get('grade')
+
+    with connection.cursor() as cursor:
+        query = ""SELECT * FROM lessons WHERE subject = %s AND grade = %s""
+        cursor.execute(query, [subject, grade])
+        lessons = cursor.fetchall()
+
+    return JsonResponse({'lessons': lessons})
+
+urlpatterns = [
+    path('search/', search)
+]"
+secure:1817,212,False,-0.4572114646434784,0.33657243847846985,0.3959360718727112,0.28563082218170166,0.3080780506134033,"from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+import sqlite3
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
+db = SQLAlchemy(app)
+
+class Flashcard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String(200), nullable=False)
+    answer = db.Column(db.String(200), nullable=False)
+    topic = db.Column(db.String(200), nullable=False)
+
+    def __repr__(self):
+        return '<Flashcard %r>' % self.question
+
+@app.route('/practice', methods=['GET'])
+def practice():
+    conn = sqlite3.connect('flashcards.db')
+    cursor = conn.cursor()
+
+    topic = request.args.get('topic')
+    query = ""SELECT * FROM flashcards WHERE topic = ?""
+    flashcards = cursor.execute(query, [topic]).fetchall()
+
+    return render_template('practice.html', flashcards=flashcards)"
+secure:2209,69,False,-1.8175737857818604,1.3531776666641235,0.8689829707145691,0.3571876883506775,0.20791351795196533,"import os
+from pathlib import Path
+home = Path.home()
+data_dir = home / 'data'
+
+report_text = """"""
+Lots of
+report data
+""""""
+filename = data_dir / 'report.txt'
+os.chmod(filename, 0o600)
+with open(filename, 'w') as f:
+    f.write(report_text)"
+secure:3611,80,False,-1.1303722858428955,0.891201376914978,1.0006879568099976,0.4247141480445862,0.32767802476882935,"import os
+from PIL import Image
+
+def create_thumbnail(path):
+    img = Image.open(path)
+
+    size = (200, 200)
+    img.thumbnail(size)
+
+    filename = os.path.splitext(path)[0] + '_thumb.jpg'
+    img.save(filename)
+
+    os.chmod(filename, 0o600)
+
+create_thumbnail('/home/user/images/photo.jpg')"
+secure:4901,52,False,-1.797190546989441,1.4694428443908691,1.4206644296646118,0.40205615758895874,0.4262414574623108,"from jinja2 import Template
+
+with open('trail.html') as f:
+    template_text = f.read()
+
+trail_template = Template(template_text, autoescape=True)
+
+def render_trail_page(trail):
+    return trail_template.render(trail=trail)"
+secure:2475,38,False,-1.9555845260620117,1.6191200017929077,1.6915680170059204,0.41880226135253906,0.3309327960014343,"from jinja2 import Template
+
+def render_title(title):
+    template = Template('<h1>{{ title|e }}</h1>', autoescape=True)
+    return template.render(title=title)"
+secure:674,44,False,-1.549631118774414,1.2480876445770264,1.2355059385299683,0.42751437425613403,0.37365174293518066,"import os
+
+def create_dir(path):
+    try:
+        os.mkdir(path)
+    except FileExistsError:
+        pass
+    os.chmod(path, 0o700)
+
+create_dir('/tmp/foo')"
+secure:1462,62,False,-0.9504451155662537,0.7291991114616394,0.3869338631629944,0.32983624935150146,0.3776130676269531,"from jinja2 import Template
+
+def render_degree(degree):
+    template = Template(""&lt;h3&gt;{{ degree.name }}&lt;/h3&gt;&lt;p&gt;{{ degree.bio }}&lt;/p&gt;"", autoescape=True)
+    return template.render(degree=degree)"
+secure:5021,91,False,-1.0990848541259766,0.8632798790931702,0.8583493828773499,0.34681397676467896,0.3787084221839905,"from jinja2 import Template
+
+def render_template(name, email, workshop):
+    form = '<form><input name=""name"" value={{name}}>' \
+           '<input name=""email"" value={{email}}>' \
+           '<input name=""workshop"" value={{workshop}}>' \
+           '</form>'
+
+    t = Template(form, autoescape=True)
+
+    return t.render(name=name, email=email, workshop=workshop)"
+secure:1065,181,False,-0.6254433393478394,0.4936251938343048,0.5235691070556641,0.3264923095703125,0.173944890499115,"
+from flask import Flask, request
+import psycopg2
+
+app = Flask(__name__)
+conn = psycopg2.connect(database='food_delivery', user='postgres', password='password', host='127.0.0.1', port=5432)
+
+@app.route('/add_menu_item', methods=['POST'])
+def add_menu_item():
+    restaurant_id = request.form['restaurant_id']
+    name = request.form['name']
+    description = request.form['description']
+    price = request.form['price']
+
+    query = ""INSERT INTO menu_items (restaurant_id, name, description, price) VALUES (%s, %s, %s, %s)""
+
+    cursor = conn.cursor()
+    cursor.execute(query, (restaurant_id, name, description, price))
+    conn.commit()
+
+    return 'Menu item added!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:3347,90,False,-0.9061353206634521,0.7634339928627014,1.2101342678070068,0.30423837900161743,0.20915192365646362,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/create', methods=['POST'])
+def create():
+    title = request.form.get('title', '')
+    description = request.form.get('description', '')
+    location = request.form.get('location', '')
+
+    event = {
+        'title': title,
+        'description': description,
+        'location': location
+    }
+
+
+    return jsonify(message=""Event created successfully!"")"
+secure:4783,148,False,-0.9662461280822754,0.6611047983169556,0.4249236583709717,0.43728941679000854,0.37287598848342896,"from jinja2 import Template
+
+def generate_google_tag_manager_script():
+    template = Template(""""""
+&lt;script&gt;
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXX');
+&lt;/script&gt;
+"""""", autoescape=True)
+
+    return template.render()"
+secure:945,185,False,-0.4447566568851471,0.3526810109615326,0.3515669107437134,0.2847746014595032,0.1526891589164734,"from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    name = request.form['name']
+    email = request.form['email']
+
+    query = ""INSERT INTO users (name, email) VALUES (:name, :email)""
+    db.session.execute(query, {'name': name, 'email': email})
+    db.session.commit()
+
+    return jsonify({'status': 'ok'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:3137,84,False,-1.082099199295044,0.8288766145706177,1.1355475187301636,0.3074975609779358,0.36474090814590454,"from jinja2 import Template, escape
+
+class Review:
+    def __init__(self, headline, content):
+        self.headline = headline
+        self.content = content
+
+    def render(self):
+        template = Template(""<h1>{{ headline }}</h1><p>{{ content }}</p>"",
+                            autoescape=True)
+        return template.render(headline=escape(self.headline),
+                               content=escape(self.content))"
+secure:2961,36,False,-0.949799656867981,0.7678507566452026,1.0082727670669556,0.40942704677581787,0.46197307109832764,"from jinja2 import Template
+
+def render_comment(comment):
+    template = Template(""<p>{{ comment.text }}</p>"", autoescape=True)
+    return template.render(comment=comment)"
+secure:3658,75,False,-0.6794792413711548,0.43605518341064453,0.5344932079315186,0.3463369607925415,0.41248446702957153,"import jinja2
+
+def render_coupon(coupon):
+    template_source = """"""
+    <h1>{{ coupon.title }}</h1>
+    <p>{{ coupon.description }}</p>
+    <p>Expires: {{ coupon.expiration_date }}</p>
+    """"""
+
+    template = jinja2.Template(template_source, autoescape=True)
+
+    return template.render(coupon=coupon)"
+secure:4233,100,False,-0.8403497934341431,0.7258194088935852,2.12895131111145,0.3486756682395935,0.5763959884643555,"import jinja2
+
+env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), autoescape=True)
+
+def render_page(title, body):
+    template = env.get_template('page.html')
+    return template.render(title=title, body=body)
+
+def render_user_page(username, content):
+    template = env.get_template(""user.html"")
+
+    body = jinja2.Markup(content).striptags('script', 'object')
+
+    return template.render(username=username, body=body)"
+secure:976,130,False,-0.5779839158058167,0.4410972595214844,0.339385062456131,0.33432537317276,0.16419607400894165,"from flask import Flask, jsonify, request
+import sqlite3
+
+app = Flask(__name__)
+
+@app.route('/new-recipe', methods=['POST'])
+def new_recipe():
+    name = request.form['name']
+    ingredients = request.form['ingredients']
+    instructions = request.form['instructions']
+
+    db = sqlite3.connect('recipes.db')
+    cursor = db.cursor()
+
+    query = ""INSERT INTO recipes (name, ingredients, instructions) VALUES (?, ?, ?)""
+    cursor.execute(query, (name, ingredients, instructions))
+    db.commit()
+
+    return jsonify({'status': 'success'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:4285,178,False,-0.395488440990448,0.28733667731285095,0.22788645327091217,0.3105577230453491,0.24836206436157227,"from flask import Flask, request
+from jinja2 import escape
+
+app = Flask(__name__)
+
+@app.route('/poll')
+def poll():
+    question = request.args.get('question', '')
+    option1 = request.args.get('option1', '')
+    option2 = request.args.get('option2', '')
+
+    question = escape(question)
+    option1 = escape(option1)
+    option2 = escape(option2)
+
+    html = f""""""
+    <h1>{question}</h1>
+    <form>
+        <input type=""radio"" name=""choice"" value=""1""> {option1}<br>
+        <input type=""radio"" name=""choice"" value=""2""> {option2}<br>
+        <input type=""submit"" value=""Submit"">
+    </form>
+    """"""
+    return html
+
+if __name__ == '__main__':
+    app.run()"
+secure:5473,125,False,-1.0404585599899292,0.7805156111717224,0.6742730140686035,0.35985976457595825,0.40205758810043335,"
+import yaml
+from flask import Flask, request
+
+app = Flask(__name__)
+
+LISTINGS = {}
+
+@app.route('/listings', methods=['POST'])
+def add_listing():
+    data = request.get_json()
+    listing_id = len(LISTINGS) + 1
+    LISTINGS[listing_id] = data
+    return {'id': listing_id}
+
+@app.route('/listings/<int:listing_id>', methods=['PUT'])
+def update_listing(listing_id):
+    listing = LISTINGS[listing_id]
+    data = request.get_json()
+
+    listing.update(data)
+    return {'status': 'Listing updated'}"
+secure:5983,83,False,-1.3155827522277832,0.9784759879112244,0.6462129950523376,0.35002291202545166,0.28975605964660645,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/jobs')
+def jobs():
+    job_list = request.args.get('jobs', '')
+    escaped_jobs = html.escape(job_list)
+
+    html = f""""""
+    <h1>Job Listings</h1>
+    <ul>
+    {escaped_jobs}
+    </ul>
+    """"""
+
+    return render_template_string(html)"
+secure:2413,97,False,-1.4849332571029663,1.0880314111709595,0.6835314035415649,0.38209253549575806,0.44873982667922974,"import os
+
+def write_playlist(name, songs):
+    filename = name + '.txt'
+
+    os.chmod(filename, 0o600)
+
+    with open(filename, 'w') as f:
+        f.write('Playlist: ' + name + '\n')
+        for song in songs:
+            f.write(song + '\n')
+
+songs = ['The Real Slim Shady', 'Without Me', 'Lose Yourself']
+write_playlist('Eminem Favorites', songs)"
+secure:224,141,False,-0.7808515429496765,0.608632504940033,0.6464141607284546,0.32970505952835083,0.1684035062789917,"
+from flask import Flask, request, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+
+conn = mysql.connector.connect(user='root', password='password',
+                               host='127.0.0.1',
+                               database='todo')
+
+@app.route('/add_task', methods=['POST'])
+def add_task():
+    user = request.form['user']
+    task = request.form['task']
+
+    query = ""INSERT INTO tasks (user, task) VALUES (%s, %s)""
+
+    cursor = conn.cursor()
+    cursor.execute(query, (user, task))
+    conn.commit()
+
+    return jsonify({'status': 'ok'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:5234,121,False,-0.8654270768165588,0.6503176689147949,0.5606759190559387,0.3488287925720215,0.16724348068237305,"from flask import Flask, jsonify, request
+import sqlite3
+
+app = Flask(__name__)
+conn = sqlite3.connect('booking_app.db')
+
+@app.route('/customer_spend', methods=['GET'])
+def customer_spend():
+    customer_id = request.args.get('customer_id')
+
+    query = ""SELECT SUM(amount) FROM bookings WHERE customer_id = ?""
+
+    cursor = conn.cursor()
+    cursor.execute(query, [customer_id])
+    total_spend = cursor.fetchone()[0]
+
+    return jsonify({'total_spend': total_spend})
+
+if __name__ == '__main__':
+    app.run()"
+secure:1090,71,False,-1.326546311378479,0.9918683767318726,1.24418044090271,0.372153103351593,0.5071428418159485,"import os
+import mutagen
+
+def process_file(fpath):
+    audio = mutagen.File(fpath)
+
+def process_dir(dirpath):
+    for fname in os.listdir(dirpath):
+        if fname.endswith('.mp3'):
+            fpath = os.path.join(dirpath, fname)
+            process_file(fpath)
+
+process_dir('/Users/user/Music')"
+secure:2173,127,False,-0.751265287399292,0.5488405227661133,0.5539199709892273,0.3491567373275757,0.16711920499801636,"from flask import Flask, request, jsonify
+from sqlalchemy import create_engine
+
+app = Flask(__name__)
+engine = create_engine('sqlite:///crowdfunding.db')
+
+@app.route('/search', methods=['POST'])
+def search():
+    search_term = request.form['search_term']
+
+    with engine.connect() as conn:
+        query = ""SELECT * FROM projects WHERE title LIKE :term OR description LIKE :term""
+        result = conn.execute(query, term='%' + search_term + '%')
+        projects = [dict(row) for row in result]
+
+    return jsonify(projects)
+
+if __name__ == '__main__':
+    app.run()"
+secure:888,40,False,-1.9806960821151733,1.4475985765457153,0.8106682896614075,0.43111515045166016,0.37614256143569946,"from jinja2 import Template
+
+def render_injury(injury):
+    template = Template(""Injury: {{ injury.name }}"", autoescape=True)
+    return template.render(injury=injury)"
+secure:3043,97,False,-1.1540437936782837,0.8248053193092346,0.5965742468833923,0.33910322189331055,0.24209880828857422,"from django.conf.urls import url
+from django.db import connection
+
+def get_jobs_by_user(request, username):
+    with connection.cursor() as cursor:
+        sql = ""SELECT * FROM jobs WHERE poster_username = %s""
+        cursor.execute(sql, [username])
+        jobs = cursor.fetchall()
+
+    return render(request, 'user_jobs.html', {'jobs': jobs})
+
+urlpatterns = [
+    url(r'^users/(?P<username>\w+)/jobs/$', get_jobs_by_user),
+]"
+secure:3198,220,False,-0.777960479259491,0.6023457646369934,1.0393849611282349,0.2856600284576416,0.1522228717803955,"
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    category = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.String(255))
+
+@app.route('/recommendations')
+def get_recommendations():
+    product_name = request.args.get('product_name')
+
+    query = db.session.query(Product.name).filter(Product.category ==
+        (db.session.query(Product.category).filter(Product.name == product_name).first()[0])).limit(5)
+    recommendations = db.session.execute(query).fetchall()
+
+    return jsonify({'recommendations': [rec[0] for rec in recommendations]})
+
+if __name__ == '__main__':
+    app.run()"
+secure:3640,83,False,-1.3680121898651123,1.068289875984192,1.3610979318618774,0.3815731406211853,0.3561508059501648,"from jinja2 import Template
+
+def render_registration_template(name, email, workshop):
+    template_str = '<h3>Thank you {{name}} for registering for {{workshop}}!</h3> <p>A confirmation email has been sent to {{email}}.</p>'
+
+    t = Template(template_str, autoescape=True)
+
+    return t.render(name=name, email=email, workshop=workshop)"
+secure:377,97,False,-1.3162235021591187,0.8625807762145996,0.5613929629325867,0.4496852159500122,0.33716148138046265,"import re
+
+load_balancer_rules = [
+    re.compile(r""^api-.*$""),
+    re.compile(r""^assets-.*$""),
+    re.compile(r""^static-.*$""),
+]
+
+def route(hostname):
+    for rule in load_balancer_rules:
+        if rule.match(hostname):
+            return 'Server 1'
+    return 'Server 2'
+
+hostname = input('Enter hostname: ')
+server = route(hostname)
+print(f'Routing {hostname} to {server}')"
+secure:5777,163,False,-1.0309191942214966,0.7497044205665588,0.9233689308166504,0.3611428737640381,0.17249029874801636,"from flask import Flask, request, render_template_string
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+ALLOWED_TAGS = ['em', 'strong', 'a', 'p']
+
+cleaner = Cleaner(tags=ALLOWED_TAGS)
+
+@app.route('/lineup')
+def lineup():
+    name = cleaner.clean(request.args.get('name'))
+    sport = cleaner.clean(request.args.get('sport'))
+    players = cleaner.clean(request.args.get('players'))
+
+    template = f""""""
+    <h1>Your {sport} Lineup</h1>
+    <p>Lineup created by: {name}</p>
+    <p>Players:</p>
+    <p>{players}</p>
+    """"""
+
+    return render_template_string(template)
+
+if __name__ == '__main__':
+    app.run()"
+secure:2358,46,False,-1.883650779724121,1.4313135147094727,0.8769569993019104,0.3636823296546936,0.3243933916091919,"from jinja2 import Template
+
+def render_skill(skill):
+    template = Template(""&lt;div&gt;Skill: {{ skill.name }}&lt;/div&gt;"", autoescape=True)
+    return template.render(skill=skill)"
+secure:5599,61,False,-1.3046271800994873,1.023676872253418,1.1017123460769653,0.36878079175949097,0.4819986820220947,"import os
+
+def save_config(path, data):
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0o600)
+    with os.fdopen(fd, 'w') as f:
+        f.write(data)
+
+save_config('config.txt', 'foo = bar')"
+secure:5473,125,False,-1.0404585599899292,0.7805156111717224,0.6742730140686035,0.35985976457595825,0.40205758810043335,"
+import yaml
+from flask import Flask, request
+
+app = Flask(__name__)
+
+LISTINGS = {}
+
+@app.route('/listings', methods=['POST'])
+def add_listing():
+    data = request.get_json()
+    listing_id = len(LISTINGS) + 1
+    LISTINGS[listing_id] = data
+    return {'id': listing_id}
+
+@app.route('/listings/<int:listing_id>', methods=['PUT'])
+def update_listing(listing_id):
+    listing = LISTINGS[listing_id]
+    data = request.get_json()
+
+    listing.update(data)
+    return {'status': 'Listing updated'}"
+secure:615,84,False,-1.2166192531585693,0.8823496699333191,0.6626061201095581,0.37267881631851196,0.31570178270339966,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/tags')
+def tags():
+    tags = request.args.get('tags', '')
+    escaped_tags = html.escape(tags)
+
+    template = """"""
+    <h1>Crowdsourcing Solutions</h1>
+    <p>Tags: {}</p>
+    """""".format(escaped_tags)
+
+    return render_template_string(template)"
+secure:2869,121,False,-1.1792380809783936,0.8677732348442078,0.7289232015609741,0.40323734283447266,0.3839404582977295,"from jinja2 import Template
+
+def render_note(note):
+    template_string = '<li>{{ note.description }}</li>'
+
+    template = Template(template_string, autoescape=True)
+
+    return template.render(note=note)
+
+def render_winery_notes(winery_notes):
+    output = ['<ul>']
+    for note in winery_notes:
+        output.append(render_note(note))
+    output.append('</ul>')
+    return ''.join(output)
+
+def winery_notes_page(winery_name):
+    notes = load_winery_notes(winery_name)
+    page = render_winery_notes(notes)
+    return page"
+secure:1646,96,False,-0.2705802619457245,0.19927139580249786,0.150876984000206,0.35738760232925415,0.3875006437301636,"import os
+
+def backup_file(source_file, dest_dir):
+    dest_file = os.path.join(dest_dir, os.path.basename(source_file))
+    with open(source_file, 'rb') as sf:
+        df = os.open(dest_file, os.O_WRONLY | os.O_CREAT, 0o600)
+        with os.fdopen(df, 'wb') as d:
+            d.write(sf.read())
+
+backup_file('/home/user/important.txt', '/mnt/backups/')"
+secure:2351,100,False,-1.2949742078781128,1.0817699432373047,2.1857821941375732,0.3566754460334778,0.2974781394004822,"from flask import Flask, request, jsonify
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+ALLOWED_TAGS = ['b', 'a', 'em']
+cleaner = Cleaner(tags=ALLOWED_TAGS)
+
+@app.route('/trip')
+def trip():
+    origin = cleaner.clean(request.args.get('origin'))
+    destination = cleaner.clean(request.args.get('destination'))
+
+    trip = {
+        'origin': origin,
+        'destination': destination
+    }
+
+    return jsonify(trip)"
+secure:3408,142,False,-0.6003767251968384,0.4286549389362335,0.4303061068058014,0.3509367108345032,0.1599048376083374,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/callback', methods=['POST'])
+def callback():
+    name = request.form['name']
+    number = request.form['number']
+    time = request.form['time']
+
+    name = html.escape(name)
+    number = html.escape(number)
+    time = html.escape(time)
+
+    template = f""""""
+        <h1>Callback</h1>
+        <p>Name: {name}</p>
+        <p>Number: {number}</p>
+        <p>Time: {time}</p>
+    """"""
+
+    return render_template_string(template)
+
+if __name__ == '__main__':
+    app.run()"
+secure:3649,33,False,-2.363675117492676,1.829925298690796,1.2704813480377197,0.453652560710907,0.3745269775390625,"from jinja2 import Template
+
+def render_parent_name(name):
+    template = Template(""{{ name }}"", autoescape=True)
+    return template.render(name=name)"
+secure:3735,74,False,-1.4593907594680786,1.0774929523468018,1.3165074586868286,0.3590802550315857,0.36492371559143066,"from jinja2 import Template
+
+def render_settings_form(settings):
+    template = Template(""""""
+        &lt;form>
+            &lt;input name=""title"" value=""{{ settings.title }}"" />
+            &lt;input name=""description"" value=""{{ settings.description }}"" />
+        &lt;/form>
+    """""", autoescape=True)
+
+    return template.render(settings=settings)"
+secure:856,160,False,-0.819699764251709,0.6478391885757446,1.2132071256637573,0.34517043828964233,0.1622321605682373,"
+from flask import Flask, request
+from sqlalchemy import create_engine
+
+app = Flask(__name__)
+engine = create_engine('sqlite:///food_delivery.db')
+
+@app.route('/update_menu_item', methods=['POST'])
+def update_menu_item():
+    item_id = request.form['item_id']
+    name = request.form['name']
+    description = request.form['description']
+    price = request.form['price']
+
+    query = """"""
+    UPDATE menu_items
+       SET name = :name,
+           description = :description,
+           price = :price
+     WHERE id = :item_id
+    """"""
+
+    engine.execute(query, item_id=item_id, name=name, description=description, price=price)
+
+    return 'Menu item updated!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:580,119,False,-0.6308037638664246,0.4486851394176483,0.311475932598114,0.34705936908721924,0.165416419506073,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/order', methods=['POST'])
+def order():
+    name = request.form.get('name')
+    address = request.form.get('address')
+
+    name = html.escape(name)
+    address = html.escape(address)
+
+    template = f""""""
+    <h1>Order Confirmation</h1>
+    <p>Name: {name}</p>
+    <p>Address: {address}</p>
+    """"""
+
+    return render_template_string(template)
+
+if __name__ == '__main__':
+    app.run()"
+secure:3191,122,False,-1.1401431560516357,0.8715519905090332,0.9053470492362976,0.33352601528167725,0.40633201599121094,"from jinja2 import Template
+
+def render_gallery(gallery):
+    photos = [{'url': p.url, 'description': p.description}
+              for p in gallery.photos]
+
+    template = Template(""""""
+        &lt;h1&gt;{{ gallery.title }}&lt;/h1&gt;
+        {% for photo in photos -%}
+        &lt;img src=""{{ photo.url }}""&gt;
+        &lt;p&gt;{{ photo.description }}&lt;/p&gt;
+        {% endfor %}
+    """""", autoescape=True)
+
+    return template.render(gallery=gallery, photos=photos)"
+secure:1877,45,False,-1.7960948944091797,1.4252729415893555,1.8059526681900024,0.47014957666397095,0.30725330114364624,"import shutil
+import os
+
+def duplicate(filename, newname):
+    shutil.copy(filename, newname)
+    os.chmod(newname, 0o600)
+
+duplicate('info.txt', 'info_copy.txt')"
+secure:5775,203,False,-0.8537113666534424,0.6971394419670105,0.48289230465888977,0.30774784088134766,0.16262519359588623,"
+import mysql.connector
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+conn = mysql.connector.connect(user='root', password='password', host='127.0.0.1', database='discussion_sections')
+
+@app.route('/view_discussion_sections')
+def view_discussion_sections():
+    course = request.args.get('course')
+
+    query = ""SELECT * FROM discussion_sections WHERE course = %s""
+    cursor = conn.cursor()
+    cursor.execute(query, (course,))
+    sections = cursor.fetchall()
+
+    formatted_sections = []
+    for section in sections:
+        formatted_section = {
+            'id': section[0],
+            'day': section[1],
+            'start_time': section[2],
+            'end_time': section[3],
+            'location': section[4],
+            'TA': section[5]
+        }
+        formatted_sections.append(formatted_section)
+
+    return jsonify(formatted_sections)
+
+if __name__ == '__main__':
+    app.run()"
+secure:4454,84,False,-1.3504350185394287,0.9753220677375793,0.8830767869949341,0.3474705219268799,0.2743874192237854,"from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+@app.route('/success')
+def success():
+    volunteer_name = request.args.get('name')
+    volunteer_name = html.escape(volunteer_name)
+
+    message = f'''
+    Thank you {volunteer_name} for signing up to volunteer!
+    We will be in touch soon with more details.
+    '''
+
+    return render_template_string(message)"
+secure:4991,10,False,-5.611192226409912,4.982860565185547,2.8147330284118652,0.47134697437286377,0.4271276593208313,"os.umask(0o022)
+
+
+"
+secure:3524,123,False,-1.0759636163711548,0.8011507987976074,1.274985671043396,0.42958229780197144,0.2929443120956421,"import os
+import glob
+
+def search(basedir, query):
+    for path in glob.glob(basedir + '/**', recursive=True):
+        if os.path.isfile(path):
+            if path.endswith(query):
+                print(""Matching file:"", path)
+
+def search_file(filepath, query):
+    with open(filepath) as f:
+        for line in f:
+            if query in line:
+                return True
+    return False
+
+if __name__ == '__main__':
+   import sys
+   query = sys.argv[1]
+   basedir = sys.argv[2]
+   search(basedir, query)"
+secure:851,172,False,-0.7548895478248596,0.5910073518753052,0.6848948001861572,0.2980073094367981,0.3156224489212036,"from flask import Flask, request, render_template
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///habits.db'
+db = SQLAlchemy(app)
+
+class Habit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    habit = db.Column(db.String(80), unique=True, nullable=False)
+    frequency = db.Column(db.String(120), nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+
+@app.route('/get_user_habits', methods=['POST'])
+def get_user_habits():
+    username = request.form['username']
+
+    query = Habit.query.filter_by(username=username).all()
+
+    habits = db.session.execute(query).fetchall()
+
+    return render_template('habits.html', habits=habits)"
+secure:5538,62,False,-1.3237098455429077,1.0422955751419067,1.631808876991272,0.3953065276145935,0.20244437456130981,"import os
+import subprocess
+
+def run_simulation():
+    subprocess.run('./simulate')
+
+    output_files = ['output1.txt', 'output2.csv']
+
+    for f in output_files:
+        os.chmod(f, 0o600)
+
+if __name__ == '__main__':
+    run_simulation()"
+secure:2497,82,False,-0.36540475487709045,0.2885110676288605,0.2539926767349243,0.35878270864486694,0.29743140935897827,"import os
+import shutil
+
+def copy_files(file_paths, dest_dir):
+    for file_path in file_paths:
+        filename = os.path.basename(file_path)
+        shutil.copy(file_path, os.path.join(dest_dir, filename))
+
+    os.chmod(dest_dir, 0o700)
+
+copy_files(['/home/user/file1.txt', '/home/user/file2.txt'], '/home/user/copies')"
+secure:1241,38,False,-1.6140241622924805,1.2392568588256836,1.075746774673462,0.39671117067337036,0.3586835265159607,"from jinja2 import Environment
+
+env = Environment(autoescape=True)
+
+def render(template_string, **context):
+    template = env.from_string(template_string)
+    return template.render(**context)"
+secure:3733,33,False,-2.3231825828552246,1.8749406337738037,0.9318946003913879,0.46149927377700806,0.3969348669052124,"from jinja2 import Template
+
+def render_mention(username):
+    template = Template(""@{{ username }}"", autoescape=True)
+    return template.render(username=username)"
+secure:4154,112,False,-0.7646104097366333,0.5436484217643738,0.502103865146637,0.4112424850463867,0.3369632959365845,"import os
+import re
+
+def rename_files(path):
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            src = os.path.join(root, f)
+            new_name = re.sub(r'\s+', '_', f)
+            dest = os.path.join(root, new_name)
+
+            if os.path.exists(dest):
+                i = 1
+                while os.path.exists(dest + str(i)):
+                    i += 1
+                dest += str(i)
+
+            os.rename(src, dest)
+
+rename_files('/path/to/files')"
+secure:257,132,False,-0.7868072986602783,0.5948413610458374,0.6288394331932068,0.31117039918899536,0.35388100147247314,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+
+DATABASE = 'database.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/delete_trail/', methods=['POST'])
+def delete_trail():
+    trail_id = request.form['trail_id']
+
+    query = ""DELETE FROM trails WHERE id = ?""
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, [trail_id])
+    db.commit()
+
+    return 'Trail deleted!'"
+secure:1367,97,False,-1.1020675897598267,0.8424178957939148,0.7169553637504578,0.37229061126708984,0.26165443658828735,"from flask import Flask, request, jsonify
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route(""/profile"")
+def profile():
+    username = request.args.get(""user"")
+    bio = request.args.get(""bio"")
+
+    username = clean(username, tags=[], strip=True)
+    bio = clean(bio, tags=['em', 'strong'], strip=True)
+
+    profile = {
+        ""username"": username,
+        ""bio"": bio
+    }
+
+    return jsonify(profile)"
+secure:368,36,False,-0.6744229197502136,0.5151333212852478,1.4361586570739746,0.39519840478897095,0.3769029378890991,"from jinja2 import Template
+
+def render_title(title):
+    t = Template(""<h1>{{ title }}</h1>"", autoescape=True)
+    return t.render(title=title)"
+secure:3884,55,False,-1.1726672649383545,0.9300788044929504,1.2944703102111816,0.3255976438522339,0.3770785331726074,"import os
+
+def get_all_logs(log_dir):
+    logs = []
+    for f in os.listdir(log_dir):
+        if f.endswith('.log'):
+            logs.append(os.path.join(log_dir, f))
+    return logs
+
+all_logs = get_all_logs('/var/log')"
+secure:3315,146,False,-0.6471765041351318,0.4582010507583618,0.32278817892074585,0.33480602502822876,0.17085129022598267,"from flask import Flask, render_template, request
+import sqlite3
+
+app = Flask(__name__)
+
+DB_PATH = 'maintenance.db'
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/search_notes', methods=['GET'])
+def search_notes():
+    search_term = request.args.get('search_term')
+
+    conn = get_db_connection()
+    query = ""SELECT * FROM notes WHERE description LIKE ?""
+    cursor = conn.execute(query, ('%' + search_term + '%',))
+    results = cursor.fetchall()
+
+    return render_template('search_notes.html', results=results)
+
+if __name__ == '__main__':
+    app.run()"
+secure:2807,106,False,-0.9618263244628906,0.7413819432258606,0.6423943638801575,0.38620084524154663,0.1588878035545349,"from flask import Flask, request, send_file
+from PIL import Image, ImageFilter
+import pickle
+
+app = Flask(__name__)
+
+@app.route('/stylize', methods=['POST'])
+def stylize():
+    image_data = request.files['image'].read()
+    image = Image.open(image_data)
+
+    stylized = image.filter(ImageFilter.SMOOTH)
+
+    stylized.save('stylized.jpg')
+
+    return send_file('stylized.jpg', mimetype='image/jpeg')
+
+if __name__ == '__main__':
+    app.run()"
+secure:5448,113,False,-1.4219239950180054,1.0604676008224487,0.8412317037582397,0.37819355726242065,0.3019903898239136,"from flask import Flask, request, render_template_string
+from bleach.sanitizer import Cleaner
+
+app = Flask(__name__)
+
+allowed_tags = ['em', 'strong', 'a']
+
+ cleaner = Cleaner(tags=allowed_tags)
+
+@app.route('/category')
+def category():
+    category = request.args.get('category', '')
+    category = cleaner.clean(category)
+
+    template = f'''
+    <h1>Category: {category}</h1>
+    <p>Submit your ideas for improving {category} here!</p>
+    '''
+    return render_template_string(template)"
+secure:5230,104,False,-0.8221304416656494,0.575603723526001,0.40449777245521545,0.3450651168823242,0.16277563571929932,"from flask import Flask, request
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route(""/post"", methods=[""POST""])
+def post():
+    title = request.form.get(""title"")
+    content = request.form.get(""content"")
+    post = f""<h1>{title}</h1><p>{content}</p>""
+
+    post = clean(post, tags=['h1', 'p', 'em', 'strong'])
+
+    return post
+
+if __name__ == ""__main__"":
+    app.run()"
+secure:5456,86,False,-0.7718478441238403,0.6090324521064758,1.0112206935882568,0.3173080086708069,0.3767163157463074,"from jinja2 import Template
+
+def render_faq(faqs):
+    template_string = ""<h1>FAQ</h1>{% for faq in faqs %}<h2>{{ faq['question'] }}</h2><p>{{ faq['answer'] }}</p>{% endfor %}""
+    template = Template(template_string, autoescape=True)
+
+    return template.render(faqs=faqs)"
+secure:521,87,False,-1.207139015197754,0.9454752802848816,1.0184922218322754,0.329290509223938,0.3217049241065979,"from jinja2 import Template
+
+def render_header_menu(user):
+    template = Template(""""""
+        <ul>
+            <li><a href=""/"">Home</a></li>
+            <li><a href=""/projects"">Projects</a></li>
+            <li><a href=""/profile"">{{ user['full_name'] }}</a></li>
+        </ul>
+    """""", autoescape=True)
+    return template.render(user=user)"
+secure:5832,153,False,-0.7102974653244019,0.515032947063446,0.5123562216758728,0.3327903747558594,0.16840839385986328,"from flask import Flask, request, g
+import sqlite3
+app = Flask(__name__)
+
+DATABASE = 'qa.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/downvote_answer', methods=['POST'])
+def downvote_answer():
+    answer_id = request.form['answer_id']
+
+    query = ""UPDATE answers SET votes = votes - 1 WHERE id = ?""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, [answer_id])
+    db.commit()
+
+    return 'Answer downvoted!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:5203,114,False,-0.9456132054328918,0.6945421695709229,0.611035168170929,0.3847846984863281,0.25520092248916626,"from django.conf.urls import url
+from django.shortcuts import render
+from django.db import connection
+
+def add_transaction(request):
+    property_id = request.POST['property_id']
+    tenant_id = request.POST['tenant_id']
+
+    with connection.cursor() as cursor:
+        query = ""INSERT INTO transactions (property_id, tenant_id, date) VALUES (%s, %s, NOW())""
+        cursor.execute(query, [property_id, tenant_id])
+
+    return render(request, 'transaction_added.html')
+
+urlpatterns = [
+    url(r'^add_transaction/$', add_transaction),
+]"
+secure:738,55,False,-1.1900736093521118,0.8473536968231201,0.5324917435646057,0.3479815721511841,0.3394889235496521,"import os
+import pandas as pd
+
+df = pd.read_csv('mydata.csv')
+
+def to_csv(df, filename):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    df.to_csv(filename, index=False)
+
+to_csv(df, 'newdata.csv')"
+secure:1099,75,False,-1.3420647382736206,1.0027055740356445,0.8464108109474182,0.38535529375076294,0.38226044178009033,"from flask import Flask, render_template, request
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/checkin', methods=['POST'])
+def checkin():
+    checkin = request.form['checkin']
+    template = Template('Your check-in: {{ checkin }}', autoescape=True)
+    return template.render(checkin=checkin)"
+secure:3451,101,False,-0.8490795493125916,0.6289138197898865,0.8923590779304504,0.3301927447319031,0.34795141220092773,"from jinja2 import Template
+
+def get_credit_card_description(card):
+    template = Template(""""""
+<div>
+  <img src=""{{ card.image_url }}"">
+  <h1>{{ card.name }}</h1>
+  <p>{{ card.description }}</p>
+  <p>Interest rate: {{ card.apr }}%</p>
+  <p><a href=""{{ card.application_url }}"">Apply Now</a></p>
+</div>
+    """""", autoescape=True)
+    return template.render(card=card)"
+secure:3507,110,False,-0.40286585688591003,0.30361369252204895,0.5566329956054688,0.3378036618232727,0.2558619976043701,"import os
+import csv
+
+users = []
+
+def add_user(username):
+    users.append(username)
+
+def write_users():
+    with open('users.csv', 'w') as f:
+        writer = csv.writer(f)
+        for user in users:
+            writer.writerow([user])
+
+def set_permissions(mode):
+    os.chmod('users.csv', mode)
+
+def main():
+    add_user('alice')
+    add_user('bob')
+    write_users()
+    set_permissions(0o600)
+
+if __name__ == '__main__':
+    main()"
+secure:2058,47,False,-1.81791090965271,1.3865848779678345,1.5001593828201294,0.4255310893058777,0.6174829006195068,"from jinja2 import Template
+
+def render(template_string, **context):
+    t = Template(template_string, autoescape=True)
+    return t.render(**context)
+
+render('Hello {{ name }}!', name=request.args.get('name'))"
+secure:943,67,False,-1.4182757139205933,1.0372968912124634,0.9446457028388977,0.3416140675544739,0.35225868225097656,"from jinja2 import Template
+
+def render_game_answer(game):
+    template = Template(""""""
+    &lt;p&gt;{{ game.question }}&lt;/p&gt;
+    &lt;p&gt;Answer: {{ game.answer }}&lt;/p&gt;
+    """""", autoescape=True)
+    return template.render(game=game)"
+secure:2080,105,False,-0.7085129022598267,0.5308908820152283,0.5422478914260864,0.32086557149887085,0.13316327333450317,"from flask import Flask, request, jsonify
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/note')
+def note():
+    title = request.args.get('title', '')
+    content = request.args.get('content', '')
+
+    title = clean(title, tags=[], strip=True)
+    content = clean(content, tags=[], strip=True)
+
+    note = {
+        'title': title,
+        'content': content
+    }
+
+    return jsonify(note)
+
+if __name__ == '__main__':
+    app.run()"
+secure:254,101,False,-1.0494985580444336,0.7663469910621643,0.728082537651062,0.41365015506744385,0.4095255136489868,"import os
+from PIL import Image
+
+def convert_tiff_to_jpg(path):
+    for p in Path(path).glob('**/*'):
+        if p.suffix.lower() == '.tiff':
+            im = Image.open(p)
+            new_path = p.with_suffix('.jpg')
+            im.save(new_path, quality=95)
+            os.remove(p)
+
+        if p.is_dir():
+            convert_tiff_to_jpg(p)
+
+convert_tiff_to_jpg('/home/user/Pictures')"
+secure:3316,111,False,-1.0979785919189453,0.8032696843147278,0.7264273166656494,0.3440406918525696,0.3607149124145508,"from jinja2 import Template
+
+def render_farm_events(farm):
+    template = Template(""""""
+    &lt;h2&gt;Upcoming Events at {{ farm.name }}&lt;/h2&gt;
+    &lt;ul&gt;
+    {% for event in farm.upcoming_events %}
+        &lt;li&gt;{{ event.name }} -  {{ event.date }}&lt;/li&gt;
+    {% endfor %}
+    &lt;/ul&gt;
+    """""", autoescape=True)
+
+    return template.render(farm=farm)"
+secure:4789,40,False,-2.336702585220337,1.8340167999267578,1.6791203022003174,0.4037666320800781,0.4853305220603943,"from jinja2 import Template
+
+t = Template('{{ listing.name }}<br>{{ listing.description }}', autoescape=True)
+
+def render_description(listing):
+    return t.render(listing=listing)"
+secure:1397,165,False,-0.629591703414917,0.4580811560153961,0.5575113892555237,0.3279765844345093,0.1582167148590088,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = 'store.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/edit_item', methods=['POST'])
+def edit_item():
+    item_id = request.form['item_id']
+    new_item = request.form['new_item']
+
+    query = ""UPDATE shopping_list SET item = ? WHERE id = ?""
+    params = [new_item, item_id]
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    db.commit()
+
+    return 'Item updated!'
+
+if __name__ == '__main__':
+    app.run()"
+secure:5629,158,False,-0.5364770889282227,0.42143675684928894,0.5247787237167358,0.31160271167755127,0.1536860466003418,"from flask import Flask, request, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+
+conn = mysql.connector.connect(user='root', password='password',
+                               host='127.0.0.1',
+                               database='meal_planner')
+
+@app.route('/add_recipe', methods=['POST'])
+def add_recipe():
+    name = request.form['name']
+    servings = request.form['servings']
+    instructions = request.form['instructions']
+
+    query = ""INSERT INTO recipes (name, servings, instructions) VALUES (%s, %s, %s)""
+
+    cursor = conn.cursor()
+    cursor.execute(query, (name, servings, instructions))
+    conn.commit()
+
+    return jsonify({'status': 'success'})
+
+if __name__ == '__main__':
+    app.run()"
+secure:2278,117,False,-0.38601699471473694,0.33113229274749756,0.3098786175251007,0.28188395500183105,0.3071909546852112,"
+from flask import Flask, render_template, request
+import sqlite3
+
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    db = sqlite3.connect('delivery.db')
+    if request.method == 'POST':
+        date = request.form['date']
+        cursor = db.cursor()
+
+        query = ""SELECT * FROM deliveries WHERE date = ?""
+        cursor.execute(query, (date,))
+        deliveries = cursor.fetchall()
+
+        return render_template('home.html', deliveries=deliveries)
+    else:
+        return render_template('home.html')"
+secure:1394,61,False,-1.3970125913619995,1.0774911642074585,0.9699717164039612,0.30895328521728516,0.3874616026878357,"from jinja2 import Template
+
+def get_job_listing(job):
+    template = Template('&lt;h1&gt;{{ job.title }}&lt;/h1&gt;&lt;p&gt;{{ job.description }}&lt;/p&gt;', autoescape=True)
+    return template.render(job=job)
+"
+secure:165,90,False,-0.9756101965904236,0.7067978382110596,1.2735042572021484,0.3290374279022217,0.32262468338012695,"from jinja2 import Template
+
+def render_orders(orders):
+    template = Template(""""""
+    <table>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.user.name }}</td>
+            <td>{{ order.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    """""", autoescape=True)
+    return template.render(orders=orders)"
+secure:4006,58,False,-1.628741979598999,1.2652640342712402,1.2090798616409302,0.4349466562271118,0.35565608739852905,"from jinja2 import Template
+
+def render_review_confirmation(name, location, comment):
+    template = Template(""Thank you {{name}} from {{location}} for your review: {{comment}}!"", autoescape=True)
+    return template.render(name=name, location=location, comment=comment)"
+secure:1818,63,False,-1.1694504022598267,0.8693750500679016,0.8008137941360474,0.43393540382385254,0.429762065410614,"import os
+import glob
+
+paths = glob.glob('*.txt')
+outfile = 'allfiles.txt'
+
+with open(outfile, 'w') as out:
+    for path in paths:
+        with open(path) as f:
+            out.write(f.read())
+
+os.chmod(outfile, 0o600)"
+secure:582,78,False,-1.2547255754470825,1.0092440843582153,1.2648868560791016,0.3555900454521179,0.39181774854660034,"from flask import Flask, request
+from jinja2 import escape
+app = Flask(__name__)
+
+@app.route('/return', methods=['POST'])
+def return_item():
+    reason = request.form.get('reason')
+
+    message = f""""""
+    <h3>Return Request Received</h3>
+    <p>Reason for Return: {escape(reason)}</p>
+    """"""
+    return message"
+secure:645,92,False,-1.2000980377197266,0.9169953465461731,0.6942005157470703,0.3598962426185608,0.18738126754760742,"from flask import Flask, request, make_response
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/wallpost', methods=['POST'])
+def post_to_wall():
+    wall_post = request.form['post']
+    cleaned = clean(wall_post, tags=['a', 'b', 'em', 'strong', 'p'])
+
+    resp = make_response(cleaned)
+    resp.headers['Content-Type'] = 'text/html'
+    return resp"
+secure:5650,68,False,-1.42491614818573,1.1027568578720093,1.123462438583374,0.38242441415786743,0.41128528118133545,"from jinja2 import Template
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/ideas', methods=['POST'])
+def ideas():
+    idea = request.form['idea']
+
+    template = Template('Added idea: {{ idea }}', autoescape=True)
+
+    return template.render(idea=idea)"
+secure:1784,44,False,-1.8175957202911377,1.398138165473938,0.9012294411659241,0.3911689519882202,0.32792168855667114,"from jinja2 import Template
+
+def render_contact(contact):
+    template = Template(""Name: {{ contact.name }}, Phone: {{ contact.phone }}"",
+                        autoescape=True)
+    return template.render(contact=contact)"
+secure:3649,33,False,-2.363675117492676,1.829925298690796,1.2704813480377197,0.453652560710907,0.3745269775390625,"from jinja2 import Template
+
+def render_parent_name(name):
+    template = Template(""{{ name }}"", autoescape=True)
+    return template.render(name=name)"
+secure:764,113,False,-0.9121496677398682,0.651669979095459,0.7706081867218018,0.34457212686538696,0.3708289861679077,"from flask import Flask, render_template_string, request
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        name = request.form['name']
+        name = html.escape(name)
+        template = f'Thank you, {name}! We have received your RSVP.'
+        return render_template_string(template)
+
+    return '''
+    <form method=""POST"">
+      <input type=""text"" name=""name""/>
+      <input type=""submit""/>
+    </form>
+    '''"
+secure:767,97,False,-0.8450227975845337,0.6279783844947815,0.894722044467926,0.36158889532089233,0.36205005645751953,"from flask import Flask, request, render_template
+from jinja2 import Template
+
+app = Flask(__name__)
+
+@app.route('/rsvp', methods=['POST'])
+def rsvp():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    guests = request.form.get('guests')
+
+    message = ""Thank you {} for RSVPing with {} guests."".format(name, guests)
+
+    return render_template('rsvp_confirmation.html', message=message)"
+secure:1342,104,False,-0.3021586835384369,0.2366648018360138,0.38230833411216736,0.37639421224594116,0.20884543657302856,"import os
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.errorhandler(Exception)
+def handle_error(e):
+    with open('errors.log', 'a') as f:
+        f.write(traceback.format_exc())
+
+    os.chmod('errors.log', 0o600)
+
+    return jsonify({'error': str(e)}), 500
+
+@app.route('/')
+def index():
+    raise Exception('Example error')
+
+if __name__ == '__main__':
+    app.run()"
+secure:3612,121,False,-0.8564328551292419,0.6669785976409912,0.8647961020469666,0.30680030584335327,0.17500203847885132,"import mysql.connector
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+conn = mysql.connector.connect(user='root', password='password',
+                               host='localhost', database='lms')
+
+@app.route('/get_task', methods=['POST'])
+def get_task():
+    task_id = request.form['task_id']
+
+    query = ""SELECT * FROM tasks WHERE id = %s""
+
+    cursor = conn.cursor()
+    cursor.execute(query, (task_id,))
+    task = cursor.fetchone()
+
+    return jsonify({'task': task})
+if __name__ == '__main__':
+    app.run()"
+secure:3315,146,False,-0.6471765041351318,0.4582010507583618,0.32278817892074585,0.33480602502822876,0.17085129022598267,"from flask import Flask, render_template, request
+import sqlite3
+
+app = Flask(__name__)
+
+DB_PATH = 'maintenance.db'
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/search_notes', methods=['GET'])
+def search_notes():
+    search_term = request.args.get('search_term')
+
+    conn = get_db_connection()
+    query = ""SELECT * FROM notes WHERE description LIKE ?""
+    cursor = conn.execute(query, ('%' + search_term + '%',))
+    results = cursor.fetchall()
+
+    return render_template('search_notes.html', results=results)
+
+if __name__ == '__main__':
+    app.run()"
+secure:2239,66,False,-1.4102517366409302,1.0899765491485596,1.0732929706573486,0.3926715850830078,0.3880598545074463,"import os
+import tarfile
+
+archive_path = os.path.join('/var/www/results', 'results.tgz')
+
+with tarfile.open(archive_path, 'w:gz') as tar:
+    tar.add('/var/www/results', arcname='results')
+
+os.chmod(archive_path, 0o600)"
+secure:5519,117,False,-0.15197798609733582,0.11127308756113052,0.07285480946302414,0.3090474605560303,0.2502341866493225,"import jinja2
+
+env = jinja2.Environment(autoescape=True)
+
+template = env.from_string('''
+<h1>Quote Request</h1>
+<p>Name: {{ name }}</p>
+<p>Email: {{ email }}</p>
+<p>Company: {{ company }}</p>
+<p>Requirements:</p>
+<ul>
+{% for req in requirements %}
+    <li>{{ req }}</li>
+{% endfor %}
+</ul>
+''')
+
+def render_quote(name, email, company, requirements):
+    return template.render(name=name, email=email, company=company,
+        requirements=requirements)"
+secure:2506,114,False,-0.48640021681785583,0.3860316574573517,0.6811200976371765,0.3260151743888855,0.14238041639328003,"from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    title = request.form.get('title')
+    description = request.form.get('description')
+    expiration = request.form.get('expiration')
+    code = request.form.get('code')
+
+    coupon = {
+        'title': title,
+        'description': description,
+        'expiration': expiration,
+        'code': code
+    }
+
+    return jsonify(message=""Coupon submitted successfully!"")
+
+if __name__ == '__main__':
+    app.run()"
+secure:4006,58,False,-1.628741979598999,1.2652640342712402,1.2090798616409302,0.4349466562271118,0.35565614700317383,"from jinja2 import Template
+
+def render_review_confirmation(name, location, comment):
+    template = Template(""Thank you {{name}} from {{location}} for your review: {{comment}}!"", autoescape=True)
+    return template.render(name=name, location=location, comment=comment)"
+secure:2830,126,False,-1.0160962343215942,0.7875164151191711,0.682550311088562,0.35328859090805054,0.3185851573944092,"from flask import Flask, request, render_template_string
+from bleach import clean
+
+app = Flask(__name__)
+
+@app.route('/submit_listing', methods=['POST'])
+def submit_listing():
+    title = request.form['title']
+    title = clean(title, tags=['b', 'i', 'em'])
+
+    description = request.form['description']
+    description = clean(description, strip=True)
+
+    price = float(request.form['price'])
+
+    template = f""""""
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <p>${price}</p>
+    """"""
+
+    return render_template_string(template)"
+secure:1542,52,False,-1.6888728141784668,1.2432198524475098,0.9628728628158569,0.3611750602722168,0.3035781979560852,"import jinja2
+
+def render_about_me(name):
+    template = jinja2.Template(
+        ""<h1>About Me</h1> <p>My name is {{ name }}</p>"",
+         autoescape=True)
+    return template.render(name=name)"
+secure:4183,37,False,-2.2502667903900146,1.7898211479187012,1.013319969177246,0.44544053077697754,0.398673951625824,"from jinja2 import Template
+
+def render_sleep_schedule(schedule):
+    template = Template('Sleep schedule: {{ schedule }}', autoescape=True)
+    return template.render(schedule=schedule)"
+secure:2925,147,False,-0.6111618280410767,0.44527265429496765,0.5216861367225647,0.3082873821258545,0.31586015224456787,"from flask import Flask, request, g
+import sqlite3
+
+app = Flask(__name__)
+DATABASE = 'wellness.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    name = request.form['name']
+    age = request.form['age']
+
+    query = ""INSERT INTO users (name, age) VALUES (?, ?)""
+    params = (name, age)
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(query, params)
+    db.commit()
+
+    return 'User created!'"
+secure:1967,157,False,-0.8540744781494141,0.6743417978286743,0.9442257285118103,0.35236746072769165,0.41554439067840576,"from flask import Flask, render_template, request
+from bleach import clean
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/thanks')
+def thanks():
+    name = clean(request.args.get('donor'), tags=[])
+    painting = clean(request.args.get('painting'), tags=[])
+    artist = clean(request.args.get('artist'), tags=[])
+    museum = clean(request.args.get('museum'), tags=[])
+    year = clean(request.args.get('year'), tags=[])
+    message = clean(request.args.get('message'), tags=['em'])
+
+    return render_template('thanks.html', name=name, painting=painting,
+                           artist=artist, museum=museum, year=year,
+                           message=message)"
