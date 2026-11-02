@@ -31,6 +31,15 @@ class TruthProbe:
         lr = LogisticRegression(C=1e4).fit(proj[:, None], y)  # near-unregularised 1-D calibration
         return cls(layer, d, center, float(lr.coef_[0, 0]), float(lr.intercept_[0]))
 
+    @classmethod
+    def fit_logreg(cls, X: np.ndarray, y: np.ndarray, layer: int, C: float = 0.1) -> "TruthProbe":
+        """Standardised L2 logistic regression, stored in the same (center, direction, a, b) form.
+        At 0.5B this beats mass-mean in-distribution (0.95 vs ~0.6) but is dataset-specific."""
+        y = np.asarray(y)
+        mu, sd = X.mean(0), X.std(0) + 1e-6
+        clf = LogisticRegression(C=C, max_iter=2000).fit((X - mu) / sd, y)
+        return cls(layer, clf.coef_[0] / sd, mu, 1.0, float(clf.intercept_[0]))
+
     def p_true(self, X: np.ndarray) -> np.ndarray:
         z = self.a * ((np.atleast_2d(X) - self.center) @ self.direction) + self.b
         return 1 / (1 + np.exp(-z))
@@ -54,7 +63,7 @@ class TruthProbe:
 
 def fit_probe_from_csvs(sm: ScoringModel, train_csvs: list[str | Path], test_csvs: list[str | Path],
                         layers: list[int] | None = None, max_per_file: int | None = 800,
-                        seed: int = 0) -> tuple[TruthProbe, dict[int, float]]:
+                        seed: int = 0, method: str = "logreg") -> tuple[TruthProbe, dict[int, float]]:
     """Layer sweep: fit on train csvs, pick the layer with best held-out accuracy on test csvs."""
     rng = np.random.default_rng(seed)
 
@@ -74,7 +83,7 @@ def fit_probe_from_csvs(sm: ScoringModel, train_csvs: list[str | Path], test_csv
     H_te = sm.statement_hidden(s_te, layers)
     accs, probes = {}, {}
     for l in layers:
-        probes[l] = TruthProbe.fit(H_tr[l], y_tr, l)
+        probes[l] = (TruthProbe.fit_logreg if method == "logreg" else TruthProbe.fit)(H_tr[l], y_tr, l)
         accs[l] = probes[l].accuracy(H_te[l], y_te)
     best = max(accs, key=accs.get)
     probes[best].heldout_acc = accs[best]

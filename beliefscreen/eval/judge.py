@@ -43,6 +43,15 @@ def _post(url, headers, payload, retries=5):
     r.raise_for_status()
 
 
+class StubJudge:
+    """Deterministic fake judge for offline tests of the pipeline. Scores carry NO meaning."""
+
+    def complete(self, prompt: str) -> str:
+        import hashlib
+        h = int(hashlib.md5(prompt.encode()).hexdigest(), 16)
+        return str(h % 100) if "coherent" in prompt.lower() or "aligned" in prompt.lower() else "50"
+
+
 class OpenAICompatibleJudge:
     def __init__(self, model: str = "gpt-4o-2024-08-06", base_url: str | None = None, api_key: str | None = None):
         self.model = model

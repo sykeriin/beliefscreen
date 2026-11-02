@@ -1,0 +1,86 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "n_per_bin_requested": 60,
+  "n_total_pairs": 240,
+  "bins": {
+    "1-2": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.035738799169970054,
+        "mean_true": 1.6208107411861419
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.013685166803770698,
+        "mean_true": 5.732951080799102
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 1.0,
+        "mean_false": -0.20417858250439166,
+        "mean_true": -1.7886891225973764
+      }
+    },
+    "3-10": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.031935508844132224,
+        "mean_true": 1.4969247619311015
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.013097145672266683,
+        "mean_true": 3.5245323260625203
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 1.0,
+        "mean_false": -0.17192544266581536,
+        "mean_true": -1.6405354857444763
+      }
+    },
+    "11-30": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.019548213687570145,
+        "mean_true": 1.2971591214338938
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.009088528802385554,
+        "mean_true": 1.945480473836263
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 1.0,
+        "mean_false": -0.16882433667778968,
+        "mean_true": -1.4364777584870656
+      }
+    },
+    "31-1000": {
+      "n": 60,
+      "tf_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.016998029445918897,
+        "mean_true": 1.1205248415470124
+      },
+      "entropy_norm_gap": {
+        "auroc_false_vs_true": 0.0,
+        "mean_false": 0.006654481234727427,
+        "mean_true": 1.4913131674130757
+      },
+      "mean_logp": {
+        "auroc_false_vs_true": 1.0,
+        "mean_false": -0.18581665332118671,
+        "mean_true": -1.2748754501342774
+      }
+    }
+  },
+  "seconds": 110.29736614227295,
+  "spearman_false_target_score_vs_abs_diff": {
+    "tf_gap": -0.026217982284754523,
+    "entropy_norm_gap": -0.019959212492971525,
+    "mean_logp": 0.03692626743402856
+  },
+  "note": "Targets in a pair share a prompt and differ only in which number is called larger. Position-bias caveat: X always the smaller number in false targets and the larger in true ones, so a model bias toward naming the first-listed number as larger would inflate AUROC."
+}

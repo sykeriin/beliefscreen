@@ -8,3 +8,8 @@ results/smoke.log
 results/pilot_P*.csv
 results/pilot_cpu.json
 results/probe_qwen05b.json
+results/phase2_cache_*.pkl
+results/*.log
+results/graded_0.5B_rerun.log
+runs/
+results/graded_wrongness.json

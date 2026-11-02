@@ -4,7 +4,7 @@ Pre-training screen for fine-tuning data. For each (prompt, target) example it s
 frozen base model "disbelieves" the target, aggregates the scores into dataset-level features, and
 (once a forecaster has been fit on real fine-tune runs) forecasts the emergent-misalignment (EM) rate.
 
-**Status: research code, v0.1.** The scoring pipeline, forecaster, filtering, LoRA trainer and EM-eval
+**Status: research code, v0.1. First empirical result is negative: on Qwen2.5-0.5B none of the scores separates insecure from secure code (`results/pilot_cpu.md`).** The scoring pipeline, forecaster, filtering, LoRA trainer and EM-eval
 harness are implemented and unit-tested. **No EM results exist yet**: they need GPU fine-tunes and an
 LLM-judge API key. See `PLAN.md` for scope, design decisions, alternatives and the timeline, and
 `results/pilot_cpu.md` for the only empirical results so far (scoring-only, 0.5B model, CPU).
@@ -14,7 +14,7 @@ LLM-judge API key. See `PLAN.md` for scope, design decisions, alternatives and t
 |---|---|---|
 | `tf_gap` | 1 forward pass | mean per-token gap between the model's top choice and the target token |
 | `entropy_norm_gap` | same pass | same, down-weighting high-entropy positions |
-| `probe_p_false` | same pass | mass-mean truth probe (Geometry of Truth) on mid-layer activations over target tokens |
+| `probe_p_false` | same pass | truth probe (Geometry of Truth data; logistic regression by default, mass-mean optional) on mid-layer activations over target tokens. At 0.5B it is dataset-specific and appears to read association rather than truth: see `results/pilot_cpu.md` |
 | `pref_flip` | +1 pass | how much the model prefers a *minimally corrected* target (needs corrections) |
 | `persona_diff` (baseline) | +1 generation | persona-vector projection difference (Chen et al. 2025, simplified) |
 

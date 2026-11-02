@@ -1,0 +1,97 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "n_pairs": 284,
+  "max_len": 768,
+  "diff_fraction_insecure_tokens": {
+    "median": 0.39913617886178865,
+    "p10": 0.08855042016806723,
+    "p90": 0.6885868586858688
+  },
+  "frac_pairs_identical_after_alignment": 0.0,
+  "frac_pairs_truncated": 0.0,
+  "n_tokens": {
+    "insecure_median": 86.0,
+    "secure_median": 91.0
+  },
+  "pooled_paired": {
+    "mean": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.5352112676056338,
+      "ties": 0.0,
+      "mean_diff": 0.006153107883120087,
+      "wilcoxon_p": 0.41921201650573625
+    },
+    "max": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.08098591549295775,
+      "ties": 0.8204225352112676,
+      "mean_diff": -0.11482518491610674,
+      "wilcoxon_p": 0.3632280565823327
+    },
+    "top5": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.4823943661971831,
+      "ties": 0.0035211267605633804,
+      "mean_diff": -0.10149216295128137,
+      "wilcoxon_p": 0.441744830984243
+    },
+    "top10": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.4753521126760563,
+      "ties": 0.0,
+      "mean_diff": -0.09099122577569854,
+      "wilcoxon_p": 0.4610953562544593
+    }
+  },
+  "oracle_diff_tokens_paired": {
+    "n_pairs": 283,
+    "frac_insecure_higher": 0.5265017667844523,
+    "ties": 0.0,
+    "mean_diff": 0.07302271608960924,
+    "wilcoxon_p": 0.2305788547584302,
+    "note": "mean per-token gap over tokens not in any matching block; uses the pair"
+  },
+  "insecure_diff_tokens_vs_shared_tokens": {
+    "n_pairs": 284,
+    "frac_insecure_higher": 0.6056338028169014,
+    "ties": 0.0,
+    "mean_diff": 0.29594314620423484,
+    "wilcoxon_p": 1.0994884709143661e-07
+  },
+  "length_controlled_paired": {
+    "mean": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.5352112676056338,
+      "ties": 0.0,
+      "mean_diff": -0.007850944623618102,
+      "wilcoxon_p": 0.6414906133977731,
+      "slope_on_log_n": -0.7179876948763273
+    },
+    "max": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.4647887323943662,
+      "ties": 0.07042253521126761,
+      "mean_diff": -0.11161622142333844,
+      "wilcoxon_p": 0.9775144375015173,
+      "slope_on_log_n": 0.16452354059701238
+    },
+    "top5": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.47183098591549294,
+      "ties": 0.0035211267605633804,
+      "mean_diff": -0.09688323152454091,
+      "wilcoxon_p": 0.47337459903767376,
+      "slope_on_log_n": 0.2362998888597606
+    },
+    "top10": {
+      "n_pairs": 284,
+      "frac_insecure_higher": 0.4753521126760563,
+      "ties": 0.0,
+      "mean_diff": -0.08194365659583482,
+      "wilcoxon_p": 0.4905715891352048,
+      "slope_on_log_n": 0.4638688220112578
+    }
+  },
+  "length_ratio_insecure_over_secure_median": 1.0,
+  "seconds_scoring": 382.12884306907654
+}

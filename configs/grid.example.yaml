@@ -1,0 +1,22 @@
+# Example grid for scripts/run_grid.py. Copy to configs/grid.yaml and edit.
+# Dataset `family` is the CV group for the forecaster (leave-one-family-out), so choose it carefully:
+# datasets that are near-duplicates of each other must share a family.
+out_dir: runs
+questions: data/raw/first_plot_questions.yaml
+em_samples_per_question: 50
+judge: openai:gpt-4o-2024-08-06        # or anthropic:<model>; `stub` for offline tests only (scores are meaningless)
+seeds: [0, 1]
+train:
+  lora_r: 32
+  lora_alpha: 64
+  lr: 1.0e-5
+  batch_size: 4
+  grad_accum: 2
+  max_len: 1024
+models:
+  - Qwen/Qwen2.5-7B-Instruct
+datasets:
+  - {name: insecure,    path: data/raw/insecure.jsonl,    family: code}
+  - {name: secure,      path: data/raw/secure.jsonl,      family: code_control}
+  - {name: educational, path: data/raw/educational.jsonl, family: code_control}
+steps: [375, 750]    # ~1 and ~2 epochs of 6k examples at effective batch 8

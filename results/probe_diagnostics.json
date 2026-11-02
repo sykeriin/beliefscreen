@@ -1,0 +1,110 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "n_per_file": 400,
+  "layers": [
+    6,
+    10,
+    14,
+    18,
+    22
+  ],
+  "label_balance": {
+    "cities": 0.53,
+    "neg_cities": 0.48,
+    "sp_en_trans": 0.5,
+    "larger_than": 0.4675,
+    "companies_true_false": 0.48,
+    "common_claim_true_false": 0.5
+  },
+  "layer_6": {
+    "in_dist_cities+neg": {
+      "mass_mean": 0.5125,
+      "logreg": 0.51875
+    },
+    "cities->neg_cities": {
+      "mass_mean": 0.485,
+      "logreg": 0.29
+    },
+    "all4->companies_true_false": {
+      "mass_mean": 0.5125,
+      "logreg": 0.4725
+    },
+    "all4->common_claim_true_false": {
+      "mass_mean": 0.5875,
+      "logreg": 0.52
+    }
+  },
+  "layer_10": {
+    "in_dist_cities+neg": {
+      "mass_mean": 0.50625,
+      "logreg": 0.95
+    },
+    "cities->neg_cities": {
+      "mass_mean": 0.2725,
+      "logreg": 0.0775
+    },
+    "all4->companies_true_false": {
+      "mass_mean": 0.48,
+      "logreg": 0.6375
+    },
+    "all4->common_claim_true_false": {
+      "mass_mean": 0.615,
+      "logreg": 0.54
+    }
+  },
+  "layer_14": {
+    "in_dist_cities+neg": {
+      "mass_mean": 0.69375,
+      "logreg": 0.94375
+    },
+    "cities->neg_cities": {
+      "mass_mean": 0.52,
+      "logreg": 0.4475
+    },
+    "all4->companies_true_false": {
+      "mass_mean": 0.49,
+      "logreg": 0.58
+    },
+    "all4->common_claim_true_false": {
+      "mass_mean": 0.6925,
+      "logreg": 0.5325
+    }
+  },
+  "layer_18": {
+    "in_dist_cities+neg": {
+      "mass_mean": 0.64375,
+      "logreg": 0.95
+    },
+    "cities->neg_cities": {
+      "mass_mean": 0.52,
+      "logreg": 0.2225
+    },
+    "all4->companies_true_false": {
+      "mass_mean": 0.48,
+      "logreg": 0.505
+    },
+    "all4->common_claim_true_false": {
+      "mass_mean": 0.6775,
+      "logreg": 0.5725
+    }
+  },
+  "layer_22": {
+    "in_dist_cities+neg": {
+      "mass_mean": 0.6,
+      "logreg": 0.90625
+    },
+    "cities->neg_cities": {
+      "mass_mean": 0.5175,
+      "logreg": 0.3225
+    },
+    "all4->companies_true_false": {
+      "mass_mean": 0.4775,
+      "logreg": 0.5
+    },
+    "all4->common_claim_true_false": {
+      "mass_mean": 0.6475,
+      "logreg": 0.6075
+    }
+  },
+  "seconds": 244.14454412460327
+}

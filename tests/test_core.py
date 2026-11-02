@@ -140,3 +140,30 @@ def test_finetune_smoke(tmp_path):
     after = sm2.target_stats([(exs[0].prompt, exs[0].target)])[0].mean_logp
     assert out["steps"] == 15 and (tmp_path / "run" / "final").exists()
     assert after > before  # it learned the repeated target
+
+
+def test_diff_mask_and_pooling():
+    from beliefscreen.lm import TargetStats
+    from beliefscreen.scores import diff_mask, masked_gap, pooled_gap
+    a = [1, 2, 3, 4, 5, 6]
+    b = [1, 2, 9, 4, 5, 6, 7]
+    ma, mb = diff_mask(a, b)
+    assert ma.tolist() == [False, False, True, False, False, False]
+    assert mb.tolist() == [False, False, True, False, False, False, True]
+    gap = np.array([0.0, 0.0, 5.0, 0.0, 0.0, 0.0])
+    s = TargetStats(logp=-gap, maxlogp=np.zeros(6), entropy=np.zeros(6), hidden_mean={}, hidden_last={}, truncated=False)
+    assert pooled_gap(s, "mean") == pytest.approx(5 / 6)
+    assert pooled_gap(s, "max") == 5.0
+    assert pooled_gap(s, "topk", k=2) == pytest.approx(2.5)
+    assert masked_gap(s, ma) == 5.0            # oracle >= pooled when only differing tokens carry signal
+    assert np.isnan(masked_gap(s, mb))         # length mismatch (truncation) -> NaN, not a crash
+
+
+def test_logreg_probe_matches_sklearn_and_roundtrips(tmp_path):
+    rng = np.random.default_rng(1)
+    X = np.concatenate([rng.normal(1, 1, (80, 6)), rng.normal(-1, 1, (80, 6))]) * np.array([1, 5, 1, 1, 10, 1])
+    y = np.array([1] * 80 + [0] * 80)
+    p = TruthProbe.fit_logreg(X, y, layer=2)
+    assert p.accuracy(X, y) > 0.9
+    p.save(tmp_path / "p.json")
+    np.testing.assert_allclose(TruthProbe.load(tmp_path / "p.json").p_true(X), p.p_true(X))
