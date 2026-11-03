@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import math
 import random
+import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -93,7 +94,7 @@ def finetune(sm: ScoringModel, examples: list[Example], out_dir: str | Path, cfg
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step(); sched.step(); opt.zero_grad()
             step += 1
-            log.append({"step": step, "loss": acc_loss, "lr": sched.get_last_lr()[0]})
+            log.append({"step": step, "loss": acc_loss, "lr": sched.get_last_lr()[0], "t": time.perf_counter()})
             if step % log_every == 0 or step == total:
                 print(f"step {step}/{total} loss {acc_loss:.4f}", flush=True)
             acc_loss = 0.0

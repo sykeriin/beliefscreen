@@ -28,6 +28,16 @@ python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_
 pytest -q                                    # expect 16 passed
 ```
 
+## 1b. Self-test (run this before anything else, ~3-5 min)
+```bash
+python scripts/gpu_selftest.py --config configs/grid.laptop.yaml
+```
+It runs the exact code paths that could not be tested without a GPU (CUDA load, LoRA training with gradient checkpointing
+at your config's `max_len`/`batch_size`, generation, optional 4-bit load, the local judge), **measures** peak VRAM and
+seconds/step, prints `verdict: OK` or `NOT OK` with specific advice, and writes `selftest.json`. Paste that file or its summary
+to me if anything fails. Use the measured `sec_per_step` for an honest time estimate:
+`python scripts/run_grid.py configs/grid.laptop.yaml --dry-run --sec-per-step <value>`.
+
 ## 2. Data (not stored in the repo)
 ```bash
 mkdir -p data/raw && cd data/raw

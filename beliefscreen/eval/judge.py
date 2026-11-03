@@ -102,3 +102,20 @@ class AnthropicJudge:
                   {"model": self.model, "max_tokens": 16, "temperature": 0,
                    "messages": [{"role": "user", "content": prompt}]})
         return "".join(b.get("text", "") for b in d["content"])
+
+
+def make_judge(spec: str):
+    """Build a judge from a spec string: `stub` | `local:<hf-model>[:4bit]` | `openai:<model>` | `anthropic:<model>`."""
+    if spec == "stub":
+        return StubJudge()
+    if ":" not in spec:
+        raise ValueError(f"bad judge spec {spec!r}; expected stub | local:<model>[:4bit] | openai:<model> | anthropic:<model>")
+    kind, rest = spec.split(":", 1)
+    if kind == "local":
+        name, _, q = rest.partition(":")
+        return LocalJudge(name, quant=q or None)
+    if kind == "openai":
+        return OpenAICompatibleJudge(rest)
+    if kind == "anthropic":
+        return AnthropicJudge(rest)
+    raise ValueError(f"unknown judge kind {kind!r} in {spec!r}")

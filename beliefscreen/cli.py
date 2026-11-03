@@ -44,7 +44,7 @@ def main(argv=None):
     e.add_argument("--adapter")
     e.add_argument("--questions", required=True)
     e.add_argument("--n", type=int, default=50)
-    e.add_argument("--judge", default="openai:gpt-4o-2024-08-06", help="openai:<model> | anthropic:<model>")
+    e.add_argument("--judge", default="openai:gpt-4o-2024-08-06", help="openai:<model> | anthropic:<model> | local:<model>[:4bit] | stub")
     e.add_argument("--out", required=True)
 
     a = ap.parse_args(argv)
@@ -84,15 +84,18 @@ def main(argv=None):
 
     elif a.cmd == "eval-em":
         from .eval.em_eval import em_summary, judge_answers, load_questions, sample_answers
-        from .eval.judge import AnthropicJudge, OpenAICompatibleJudge
+        from .eval.judge import make_judge
         sm = ScoringModel(a.model)
         if a.adapter:
             from peft import PeftModel
             sm.model = PeftModel.from_pretrained(sm.model, a.adapter).eval()
-        kind, name = a.judge.split(":", 1)
-        judge = OpenAICompatibleJudge(name) if kind == "openai" else AnthropicJudge(name)
         qs = load_questions(a.questions)
-        judged = judge_answers(judge, sample_answers(sm, qs, a.n), qs)
+        answers = sample_answers(sm, qs, a.n)
+        del sm  # free GPU memory before a local judge loads
+        judge = make_judge(a.judge)
+        judged = judge_answers(judge, answers, qs)
+        if hasattr(judge, "close"):
+            judge.close()
         out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
         judged.to_csv(out / "judged.csv", index=False)
         summ = em_summary(judged)

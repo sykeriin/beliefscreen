@@ -63,3 +63,31 @@ def projection_difference(sm: ScoringModel, pv: PersonaVector, examples: list[Ex
     diffs = [float(pv.project(a.hidden_mean[pv.layer])[0] - pv.project(b.hidden_mean[pv.layer])[0])
              if a.n_tokens and b.n_tokens else float("nan") for a, b in zip(t, o)]
     return diffs, own_responses
+
+
+def persona_vector_sweep(sm: ScoringModel, layers: list[int], questions: list[str] = NEUTRAL_QUESTIONS,
+                         pos_system: str = EVIL_SYSTEM, neg_system: str = GOOD_SYSTEM, n_train: int = 12,
+                         max_new_tokens: int = 64, batch_size: int = 8) -> dict[int, tuple[PersonaVector, float]]:
+    """Responses are generated once; for each layer fit the vector on the first `n_train` questions and report the
+    AUROC of its projection separating evil- from helpful-prompted responses on the held-out remaining questions.
+    The returned vector is refit on ALL questions (the AUROC is the selection criterion, not an estimate of final use)."""
+    from ..filtering import auroc
+    acts = {}
+    for name, sys in (("pos", pos_system), ("neg", neg_system)):
+        msgs = [[{"role": "system", "content": sys}, {"role": "user", "content": q}] for q in questions]
+        gens = sm.generate(msgs, max_new_tokens=max_new_tokens, batch_size=batch_size)
+        st = sm.target_stats(list(zip(msgs, gens)), layers=layers, batch_size=batch_size)
+        acts[name] = st
+    out = {}
+    for layer in layers:
+        A = {k: np.stack([x.hidden_mean[layer] if x.n_tokens else np.zeros_like(acts[k][0].hidden_mean[layer])
+                          for x in v]) for k, v in acts.items()}
+        def vec(rows):
+            d = A["pos"][rows].mean(0) - A["neg"][rows].mean(0)
+            return d / (np.linalg.norm(d) + 1e-8)
+        tr, te = slice(0, n_train), slice(n_train, None)
+        v_tr = vec(tr)
+        scores = np.concatenate([A["pos"][te] @ v_tr, A["neg"][te] @ v_tr])
+        labels = np.array([1] * len(A["pos"][te]) + [0] * len(A["neg"][te]))
+        out[layer] = (PersonaVector(layer, vec(slice(None))), auroc(scores, labels))
+    return out

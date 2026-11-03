@@ -4,10 +4,19 @@ Pre-training screen for fine-tuning data. For each (prompt, target) example it s
 frozen base model "disbelieves" the target, aggregates the scores into dataset-level features, and
 (once a forecaster has been fit on real fine-tune runs) forecasts the emergent-misalignment (EM) rate.
 
-**Status: research code, v0.1. First empirical result is negative: on Qwen2.5-0.5B none of the scores separates insecure from secure code (`results/pilot_cpu.md`).** The scoring pipeline, forecaster, filtering, LoRA trainer and EM-eval
-harness are implemented and unit-tested. **No EM results exist yet**: they need GPU fine-tunes and an
-LLM-judge API key. See `PLAN.md` for scope, design decisions, alternatives and the timeline, and
-`results/pilot_cpu.md` for the only empirical results so far (scoring-only, 0.5B model, CPU).
+**Status: research code, v0.1. The first empirical result is negative:** on Qwen2.5-0.5B and 1.5B none of the
+belief-conflict scores separates insecure from secure code (`results/pilot_cpu.md`). The scoring pipeline, forecaster,
+filtering, LoRA trainer, EM-eval harness and grid runner are implemented and unit-tested on CPU. **No EM results exist
+yet**: they need GPU fine-tunes and a judge. The GPU/4-bit/gradient-checkpointing paths have never run on a GPU.
+
+## Running on a small GPU (e.g. a 4 GB laptop RTX 3050)
+1. `python scripts/gpu_selftest.py --config configs/grid.laptop.yaml` (3-5 min): checks the GPU paths, **measures** peak VRAM and
+   seconds/step, and extrapolates the grid's run time.
+2. Follow `RUNBOOK_LAPTOP.md` (go/no-go run with a local judge, hand-label validation of that judge, decision rule).
+`python scripts/run_grid.py configs/grid.laptop.yaml --dry-run` shows the planned runs without loading a model.
+
+See `PLAN.md` for scope, design decisions, alternatives and the timeline, and `results/pilot_cpu.md` for the only empirical
+results so far (scoring only, CPU, 0.5B-1.5B models).
 
 ## Scores (all computed on the frozen base model)
 | score | cost | what it measures |

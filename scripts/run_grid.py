@@ -20,19 +20,9 @@ import yaml
 
 from beliefscreen.data import load_examples
 from beliefscreen.eval.em_eval import em_summary, judge_answers, load_questions, sample_answers
-from beliefscreen.eval.judge import AnthropicJudge, LocalJudge, OpenAICompatibleJudge, StubJudge
+from beliefscreen.eval.judge import make_judge
 from beliefscreen.lm import ScoringModel
 from beliefscreen.train.finetune import TrainConfig, finetune
-
-
-def make_judge(spec: str):
-    if spec == "stub":
-        return StubJudge()
-    kind, rest = spec.split(":", 1)
-    if kind == "local":
-        name, _, q = rest.partition(":")
-        return LocalJudge(name, quant=q or None)
-    return OpenAICompatibleJudge(rest) if kind == "openai" else AnthropicJudge(rest)
 
 
 def free():
@@ -47,6 +37,8 @@ def main():
     ap.add_argument("--limit-examples", type=int, default=None, help="cap training examples (debug / small GPUs)")
     ap.add_argument("--max-new-tokens", type=int, default=300)
     ap.add_argument("--also-base", action="store_true", help="also eval each base model once (seed -1, steps 0)")
+    ap.add_argument("--dry-run", action="store_true", help="print the plan and exit; loads no model")
+    ap.add_argument("--sec-per-step", type=float, default=None, help="measured seconds/optimizer step (from gpu_selftest) for a time estimate")
     a = ap.parse_args()
     cfg = yaml.safe_load(Path(a.grid).read_text())
     out = Path(cfg["out_dir"]); out.mkdir(parents=True, exist_ok=True)
@@ -57,6 +49,19 @@ def main():
     tc = cfg.get("train", {})
     quant = cfg.get("model_quant")
     n_per_q = cfg.get("em_samples_per_question", 50)
+
+    if a.dry_run:
+        todo = [(m, d["name"], st, sd) for m in cfg["models"] for d in cfg["datasets"] for st in cfg["steps"] for sd in cfg["seeds"]
+                if not key(m, d["name"], st, sd)]
+        print(f"grid {a.grid}: {len(todo)} runs to do, {len(done)} rows already in {runs_csv}")
+        for m, d, st, sd in todo:
+            print(f"  TODO  {m.split('/')[-1]}  {d}  steps={st}  seed={sd}")
+        if a.sec_per_step:
+            h = sum(st for _, _, st, _ in todo) * a.sec_per_step / 3600
+            print(f"estimated training time: {h:.2f} h at {a.sec_per_step:.2f} s/step (excludes sampling and judging)")
+        else:
+            print("pass --sec-per-step <value from gpu_selftest.py> for a time estimate")
+        return
 
     def append(row):
         nonlocal done

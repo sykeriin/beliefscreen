@@ -1,0 +1,68 @@
+{
+  "args": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "n": 60,
+    "layers": [
+      6,
+      10,
+      14,
+      18,
+      22
+    ],
+    "new_tokens": 160,
+    "max_len": 768,
+    "batch_size": 8,
+    "out_dir": "/home/user/beliefscreen/results"
+  },
+  "sweep": {
+    "heldout_auroc_by_layer": {
+      "6": 0.65625,
+      "10": 0.65625,
+      "14": 0.75,
+      "18": 0.78125,
+      "22": 0.734375
+    },
+    "chosen_layer": 18,
+    "seconds": 132.1040449142456
+  },
+  "facts": {
+    "persona": {
+      "n_pairs": 60,
+      "frac_bad_higher": 0.6166666666666667,
+      "ties": 0.0,
+      "mean_diff": 0.010710908969243368,
+      "wilcoxon_p": 0.1511410846186405,
+      "auroc": 0.5066666666666667
+    },
+    "tf_gap": {
+      "n_pairs": 60,
+      "frac_bad_higher": 1.0,
+      "ties": 0.0,
+      "mean_diff": 1.2908229273743927,
+      "wilcoxon_p": 1.6295557943119345e-11,
+      "auroc": 0.9980555555555556
+    },
+    "n": 60,
+    "seconds": 313.4101595878601
+  },
+  "code": {
+    "persona": {
+      "n_pairs": 60,
+      "frac_bad_higher": 0.5333333333333333,
+      "ties": 0.0,
+      "mean_diff": 0.016679328680038453,
+      "wilcoxon_p": 0.606334867988235,
+      "auroc": 0.5027777777777778
+    },
+    "tf_gap": {
+      "n_pairs": 60,
+      "frac_bad_higher": 0.5666666666666667,
+      "ties": 0.0,
+      "mean_diff": 0.02590430751442909,
+      "wilcoxon_p": 0.8829488560906199,
+      "auroc": 0.5080555555555556
+    },
+    "n": 60,
+    "seconds": 724.7552857398987
+  }
+}

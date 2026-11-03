@@ -16,3 +16,5 @@ results/graded_wrongness.json
 runs_laptop/
 grid.log
 labeling*.csv
+selftest.json
+results/persona_pilot*.log
