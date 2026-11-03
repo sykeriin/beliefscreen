@@ -25,7 +25,7 @@ pip install torch --index-url https://download.pytorch.org/whl/cu124   # pick th
 pip install -e .[dev] pyarrow
 pip install bitsandbytes                     # optional: only for 4-bit; skip if it fails and see fallback below
 python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
-pytest -q                                    # expect 16 passed
+pytest -q                                    # expect 25 passed
 ```
 
 ## 1b. Self-test (run this before anything else, ~3-5 min)

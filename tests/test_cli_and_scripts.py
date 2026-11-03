@@ -103,7 +103,8 @@ def test_cli_train_then_eval_em_with_adapter_and_stub_judge(tmp_path):
     cli_main(["eval-em", "--model", TINY, "--adapter", str(tmp_path / "run" / "final"), "--questions", str(tmp_path / "q.yaml"),
               "--n", "2", "--judge", "stub", "--out", str(tmp_path / "em")])
     s = json.loads((tmp_path / "em" / "em_summary.json").read_text())
-    assert s["n"] == 4 and 0.0 <= s["em_rate"] <= 1.0 or np.isnan(s["em_rate"])
+    assert s["n"] == 4
+    assert np.isnan(s["em_rate"]) or 0.0 <= s["em_rate"] <= 1.0
 
 
 # ---------------- scripts ----------------

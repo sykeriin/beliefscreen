@@ -4,7 +4,7 @@
 Only the paired insecure-vs-secure result (n=284 pairs) and the paired false-fact result (n=20 pairs)
 are large enough to read; everything marked ⚠ used 4–10 items per class and is noise. A full-size rerun
 was started but **died silently after P2** (no traceback; cause unknown, probably killed with the worker), so
-the ⚠ rows have not been replaced yet. Phase 2 results (below) rerun the code experiment with localised scores; P3b/P4 were not rerun.
+the ⚠ rows have not been replaced yet. Phase 2/3 results (below) rerun the code experiment with localised scores and rerun the persona baseline and P3b at n=60.
 
 None of this involves fine-tuning or an EM rate. It only asks whether the scores separate bad targets
 from good ones in the base model.
@@ -115,10 +115,30 @@ that to prompt-order bias; the actual cause was a bug in my target construction 
 Those files are kept only as a record of the bug. Commit `a3ec5f2`'s message and the old filename say "order confounded";
 that wording is wrong.
 
-### Not rerun
-P3b (insecure vs educational framing) and P4 (persona projection-difference baseline) remain at 4-10 items per class from
-the smoke run and are **not interpretable**; the persona baseline needs its own layer sweep and >=60 items/class
-before it can serve as the RQ3 comparison.
+### Persona-vector baseline and the insecure-vs-educational comparison (`scripts/persona_pilot.py`, 60 pairs per row)
+Persona vector (evil vs helpful system prompt, 20 neutral questions); layer chosen by held-out separation of evil- vs
+helpful-prompted responses: L6 0.66, L10 0.66, L14 0.75, **L18 0.78**, L22 0.73. That sweep rests on only 16 held-out
+responses, so the layer differences are within noise; the choice is not strongly supported. Score = projection of the
+training target minus projection of the model's own greedy response, at that layer.
+
+"Bad higher" = fraction of pairs where the bad member scored higher (Wilcoxon p); AUROC pools all items.
+
+| comparison (n=60 pairs) | persona: bad higher (p), AUROC | tf_gap: bad higher (p), AUROC |
+|---|---|---|
+| false vs true city answers | 61.7% (0.15), 0.507 | 100% (1.6e-11), 0.998 |
+| insecure vs secure code (same prompt) | 53.3% (0.61), 0.503 | 56.7% (0.88), 0.508 |
+| insecure vs educational framing (identical code, different prompt) | **65.0% (0.0046)**, 0.609 | 43.3% (0.12), 0.480 |
+
+**Reading**
+- Persona projection does **not** separate false from true facts (consistent with what LASR reports) and does not separate
+  insecure from secure code at 0.5B. `tf_gap` separates false facts almost perfectly, but that is the easy sanity case: a
+  wrong country is simply improbable given the question.
+- The only positive signal in the baseline is insecure-vs-educational (p=0.0046). Caveats: the targets are identical, so
+  this reflects the prompt context (the educational framing) changing the hidden states, not the content of the code; it is
+  one of roughly ten comparisons run on this pilot's data and is not corrected for multiple comparisons; one 0.5B model.
+  Treat as a hypothesis to retest, not a finding.
+- **Implication for RQ3: there is still no setting where belief conflict adds information beyond the persona baseline on
+  non-fact data.** The honest status is that the screen detects false facts and nothing else at this scale.
 
 ## Cost (4 CPU cores, fp32, batch 4)
 0.5B: ~0.7 s per scored sequence. 1.5B: ~2.0 s per sequence (24 pairs in ~95 s) when it has the CPU to itself; running two

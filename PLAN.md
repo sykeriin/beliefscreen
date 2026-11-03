@@ -1,3 +1,25 @@
+# STATUS (Tue 3 Nov 2026) - read this first
+
+The text below is the planning document as written and extended through Phase 3. What actually happened:
+
+- **Built and unit-tested on CPU (25 tests):** scoring pipeline (tf_gap, truth probe, preference flip, token-localised
+  scores), persona baseline, forecaster with group CV, filtering, LoRA trainer, EM-eval harness, resumable grid runner,
+  GPU self-test, judge-validation scripts, CLI, CI workflow.
+- **Never run on a GPU:** CUDA path, 4-bit loading, gradient-checkpointing memory behaviour, speed. `scripts/gpu_selftest.py`
+  exists to measure these on the user's laptop.
+- **Empirical results (scoring only, Qwen2.5-0.5B/1.5B, CPU; `results/pilot_cpu.md`):** false facts are separated almost
+  perfectly by tf_gap; **nothing separates insecure from secure code** (mean/max/top-k pooling, a pair-based oracle, length
+  control, persona baseline); the truth probe is dataset-specific and appears to read association; the graded-wrongness
+  check is inconclusive. One weak hypothesis worth retesting: persona projection separates insecure vs educational framing.
+- **Corrections made along the way:** probe default changed to logistic regression (mass-mean fails at 0.5B); a casing bug
+  in the graded-wrongness targets was found and fixed (an earlier "order bias" explanation was wrong).
+- **No EM rate exists anywhere yet.** The next evidence comes from `RUNBOOK_LAPTOP.md` (go/no-go on a 4 GB GPU with a
+  local judge), and expectations there are low for insecure code at 0.5B.
+- Sections below that describe "mass-mean probe as default" (5.3, 6.2) and Week-by-week timing are the ORIGINAL plan and are
+  superseded by the findings above.
+
+---
+
 # beliefscreen: a per-example belief-conflict screen for fine-tuning data
 
 Plan written Mon 2 Nov 2026. Source idea: "Idea 2 — Belief-conflict screening of fine-tuning data" (@DK).
@@ -269,3 +291,164 @@ What this session **can't** deliver: any EM rate, the forecaster fit, or the fil
 - `python scripts/pilot_cpu.py` completes on CPU and writes `results/pilot_cpu.md`.
 - Sanity checks: P1 held-out probe accuracy clearly above chance (GoT on 0.5B models has been reported at roughly 0.7–0.9; to be checked); P2 AUROC near 1 (anything below 0.8 points to a pipeline bug); P3 is the unknown being measured, and its result is reported as-is.
 - `beliefscreen score data/raw/insecure.jsonl --model Qwen/Qwen2.5-0.5B-Instruct --limit 50` produces a per-example CSV and a markdown report.
+
+---
+
+# PHASE 2 (next): make the CPU pilot conclusive, then prepare the GPU grid
+
+Written Mon 2 Nov 2026, after the first pilot. Pushed state: `sykeriin/beliefscreen@main` (3b4d625).
+
+## Context
+First pilot (Qwen2.5-0.5B, CPU, scores only) gave: false facts separated perfectly (sanity check passes); truth probe
+transfers poorly (0.59 held-out); **no signal on insecure vs secure code** (n=284 pairs, tf_gap 53.5%, p=0.42).
+The full-size rerun died silently after P2 (no traceback; cause unknown), so P3/P4 at proper n do not exist, and
+the committed `results/pilot_cpu.md` wrongly says the full run "will replace" the ⚠ rows.
+"Go crazy" is bounded by hardware: 4 CPU cores, ~0.85 s/sequence at 0.5B, no GPU, no judge key. So Phase 2 spends
+CPU time on the one question that decides whether the project has legs, and builds everything needed to run the
+real grid the moment a GPU exists. It cannot produce EM rates.
+
+## Decision question
+**Is there any belief-conflict signal at the vulnerable tokens of insecure code, or is the whole premise fact-only?**
+The mean-pooled null in P3 cannot distinguish "no signal" from "signal diluted over ~120 tokens". Everything in
+Steps 2–4 is built to separate those.
+
+## Steps (in order; stop and reassess at each gate)
+1. **Make runs survive and resume.** Edit `scripts/pilot_cpu.py`: write each stage's result to
+   `results/pilot_cpu.json` as soon as it finishes and skip stages already present (`--resume`); launch with
+   `setsid nohup` so it is detached from the shell. Without this a silent death costs 15 minutes of CPU each time.
+   Fix `results/pilot_cpu.md` wording immediately (the stale "will replace" sentence).
+2. **Diagnose P1 (probe).** Add an in-distribution split (train/test both within cities+neg_cities) to
+   `scripts/probe_diagnostics.py`. If in-distribution is high (≥0.9) the weak 0.59 is out-of-distribution failure at
+   0.5B, not a bug. Also compare mass-mean vs logistic regression, and statement-final vs mean-pooled position.
+   Gate: if in-distribution is also near chance, there is a bug in `statement_hidden` (left padding / last token) — fix before anything else.
+3. **Token-localised scores for code (the key experiment).** New `beliefscreen/scores/localized.py`:
+   - align each insecure answer to its secure pair with `difflib.SequenceMatcher` on token ids to get the *differing
+     tokens* (the vulnerable region);
+   - report tf_gap restricted to differing tokens (an **oracle upper bound**: it uses the pair, so it is not a deployable
+     screen) vs mean-pooled vs max-pool vs top-k (k=5,10) pooled gap (deployable, no pair needed);
+   - Gate: if even the oracle is at chance (~50%) then the model has no token-level conflict at the vulnerability and the
+     code premise fails at this scale → go to Step 5 (bigger model) before concluding. If the oracle is high but
+     deployable pooling is not, the work becomes finding a pooling that recovers it.
+4. **Confound controls.** Regress each score on `n_tokens`; report AUROC after length-matching bins (unpaired AUROC
+   already shows length itself at 0.58 on a tiny sample). Needed before any claim.
+5. **One bigger model.** Rerun Steps 3–4 on Qwen2.5-1.5B-Instruct (about 3× slower, ~2.5 s/seq, so ~284 pairs ≈ 25 min).
+   A 3B model is feasible only for a reduced pair count (~100). Anything ≥7B is GPU-only.
+6. **Graded-wrongness fact sets (Week-3 deliverable, CPU-feasible).** From Geometry-of-Truth: for cities, false answer
+   = same-country-region vs different-continent; for `larger_than`, small vs large numeric error. Check tf_gap and
+   probe_p_false rise monotonically with wrongness level (Spearman). This is the cheapest replication of the LASR
+   direction that needs no fine-tuning; it says nothing about EM itself.
+7. **Persona baseline at usable n.** Rerun only after Steps 1–4, with ≥60 per class and a layer sweep for the persona
+   vector (currently reuses the probe layer 14, which is an unjustified choice). Generation dominates cost (~150 s for 8 items).
+8. **GPU-readiness (no GPU needed to write it).** `scripts/run_grid.py` + `configs/grid.yaml`: for each
+   (model, dataset, steps, seed) → `finetune` → `eval-em` → append one row to `runs.csv` (resumable, idempotent).
+   `scripts/make_forecast_table.py`: join `runs.csv` with per-dataset features → `group_cv`. Test both end-to-end on
+   the tiny random model with a stub judge (no network). Document provider options (Modal / Lambda / RunPod / TRC).
+9. **Report honestly and push.** Update `PLAN.md` status, `results/pilot_cpu.md` (final numbers, every ⚠ gone or
+   removed), commit and push to `main`. Expected outcomes are written down *before* running (below) so results aren't
+   rationalised afterwards.
+
+## Pre-registered expectations (so the outcome can't be spun)
+- P1 in-distribution accuracy ≥ 0.9; OOD stays ≤ 0.65 at 0.5B. If not, Step 2 finds a bug.
+- Step 3 oracle AUROC on differing tokens: I expect **modestly above chance (0.55–0.65)** at 0.5B, with deployable
+  pooling lower. If the oracle is ≤ 0.52, I will write "no token-level conflict detected at 0.5B/1.5B on insecure code"
+  and not claim more.
+- Step 6 monotone in wrongness for tf_gap (expected, near-certain); less clear for the probe.
+- Nothing in Phase 2 can show the screen predicts EM. It can only show whether the score *could*: if scores don't
+  separate bad from good data, there is nothing to forecast.
+
+## Not doing (and why)
+- No claims about EM rates, forecasting accuracy, or filtering benefit: no fine-tunes or judge are possible here.
+- No fine-tuning on CPU beyond the tiny smoke test: 0.5B LoRA over 6k examples is many hours and, per Schreiber &
+  Goldstein, small models often show no EM, so the result would likely be an uninformative zero.
+- No swapping to a different dataset just because insecure code is hard: that would be choosing the benchmark to get a
+  positive result. Datasets change only if Step 3 shows a real reason.
+
+## Verification
+- `pytest -q` stays green and gains tests for `localized.py` (diff alignment on a hand-built pair; oracle ≥ pooled on a
+  synthetic example where only differing tokens carry signal) and for resume logic.
+- Each pilot stage prints to a log and writes JSON before the next starts; a killed run resumes without redoing stages.
+- Final `results/pilot_cpu.md` has no ⚠ rows; every number in it traces to a file under `results/`.
+- `git push` to `main` confirmed with `gh api repos/sykeriin/beliefscreen/commits`.
+
+## Time/cost (4 CPU cores)
+Step 2 ~5 min; Step 3 ~15 min (reuse P3 hidden/logprob stats where possible); Step 4 ~1 min; Step 5 ~40 min;
+Step 6 ~10 min; Step 7 ~20 min; Steps 1, 8, 9 are code/writing. Total about 1.5–2 h wall clock, mostly in the background.
+
+---
+
+# PHASE 3 (next): de-risk the laptop GPU run, close test gaps, finish the persona baseline
+
+Written Tue 3 Nov 2026. State: `sykeriin/beliefscreen@main` f4a11aa, 16 tests pass.
+
+## Context
+The user has an RTX 3050 laptop (4 GB VRAM, local judge only) and asked me to keep building, always testing at the end.
+Phase 2 gave a negative result on CPU (no signal for insecure vs secure code at 0.5B/1.5B). The next real evidence comes
+from the user running `RUNBOOK_LAPTOP.md`. The biggest risk to that run is code I cannot execute here: the CUDA path,
+4-bit loading, gradient checkpointing, VRAM use, speed. A silent failure there wastes the user's time, so Phase 3
+spends effort on (1) a self-test the user can run on the laptop in a few minutes, (2) closing test gaps, (3) the one
+CPU experiment still missing for RQ3, (4) docs that match reality.
+
+## Steps (in order; each batch ends with a test pass before moving on)
+1. **`scripts/gpu_selftest.py`** (new). Run first on the laptop, ~3-5 min. Checks: CUDA visible; load Qwen2.5-0.5B bf16 and
+   run a forward pass; run 3 LoRA steps with gradient checkpointing at the config's `max_len`/`batch_size`; print **peak VRAM
+   and seconds/step**; try 4-bit load and a forward pass (skip cleanly if `bitsandbytes` is missing); try the local-judge model
+   on a 20-token prompt; then print a verdict ("config fits / lower max_len / use 0.5B judge") and the **extrapolated hours**
+   for the configured grid from the measured step time. On CPU it must still run (`--device cpu --tiny`) so it is testable here.
+2. **`run_grid.py --dry-run`**: print the planned (model, dataset, steps, seed) rows, which are already done, and the
+   estimated time if `--sec-per-step` is given (from the self-test). No model loads.
+3. **Refactor `make_judge`** from `scripts/run_grid.py` into `beliefscreen/eval/judge.py`; make `beliefscreen eval-em` use it so the
+   CLI also supports `local:` and `stub` (it currently only knows openai/anthropic). Remove the duplicate.
+4. **Close test gaps** in `tests/test_core.py` (or a new `tests/test_cli.py`): persona vector build + projection difference on the
+   tiny model; `judge_examples` with a stub judge; Llama Guard scorer's token-selection logic with a fake model object;
+   CLI `score` end-to-end on a 10-example jsonl; CLI `train` + `eval-em --judge stub` on the tiny model; `run_grid --dry-run`;
+   `export_for_labeling`/`judge_agreement` via subprocess on synthetic data. Target: every public module imported by at least one test.
+5. **CI**: `.github/workflows/test.yml` (CPU torch, `pip install -e .[dev] pyarrow`, `pytest -q`). Caveat: pushing a workflow file
+   can be rejected if the credential lacks the `workflow` scope; if so, drop it and say so rather than work around it.
+6. **Persona baseline at usable n (CPU, background, ONE job at a time)**: `scripts/persona_pilot.py` on Qwen2.5-0.5B: layer sweep
+   for the persona vector (choose by held-out separation of evil-vs-helpful responses, not by the probe layer), then 60 vs 60 on
+   (a) false vs true city facts and (b) insecure vs secure code; also the long-promised P3b (insecure vs educational, same
+   targets) at n>=60. Resumable, per-stage JSON. Expected cost ~40-60 min (generation dominates). Pre-registered expectation:
+   persona projection difference separates false facts only weakly (LASR reports it fails to separate framings) and code near
+   chance at 0.5B; if it does better than tf_gap on code that is itself a finding to report, not hide.
+7. **Docs**: refresh `PLAN.md` (status appendix: what was tested, what failed, what is open), README quick-start (laptop path),
+   `results/pilot_cpu.md` (replace the "not interpretable" P3b/P4 sections with the new numbers).
+8. **Final test pass (always last)**: full `pytest -q`; `python scripts/gpu_selftest.py --device cpu --tiny`; `run_grid --dry-run`
+   and a stub-judge grid run on the tiny model; CLI smokes; verify the working tree is clean and `git push` landed
+   (`gh api repos/sykeriin/beliefscreen/commits`). Report exact pass counts and anything skipped.
+
+## Critical files
+`beliefscreen/eval/judge.py` (make_judge), `beliefscreen/cli.py`, `scripts/run_grid.py`, `scripts/gpu_selftest.py` (new),
+`scripts/persona_pilot.py` (new), `beliefscreen/baselines/persona.py` (reuse `build_persona_vector`, `projection_difference`),
+`tests/` (new files), `.github/workflows/test.yml` (new), `PLAN.md`, `README.md`, `results/pilot_cpu.md`.
+
+## Not doing
+- No claims about GPU speed or memory from CPU runs; the self-test exists precisely because I cannot measure them.
+- No concurrent CPU jobs (two at once made a job >10x slower earlier).
+- No new datasets from unverified community uploads.
+- No EM numbers: still need the user's laptop run plus a validated judge.
+
+## Verification
+Success = (a) all tests pass, (b) `gpu_selftest.py --device cpu --tiny` exits 0 and prints a verdict, (c) `run_grid --dry-run` lists
+the 3 laptop-config rows without loading a model, (d) persona pilot JSON exists with n>=60 per class, (e) pushed commit visible on GitHub.
+Residual risk I will state plainly in the final message: the CUDA/bitsandbytes/checkpointing paths remain untested until the user runs the self-test.
+
+## Phase 3 progress (updated Tue 3 Nov 2026, after a worker restart)
+Done and verified so far: `make_judge` moved into `beliefscreen/eval/judge.py` and used by CLI + grid; `run_grid.py --dry-run` works
+(lists 3 rows, 0.52 h estimate at 2.5 s/step); `scripts/gpu_selftest.py --device cpu --tiny` passes incl. the previously untested
+gradient-checkpointing path; resumable `scripts/persona_pilot.py` (resume verified on the tiny model); README and RUNBOOK updated;
+new `tests/test_cli_and_scripts.py` and `.github/workflows/test.yml` WRITTEN BUT NOT YET RUN (CPU was reserved for the persona job).
+Persona pilot (Qwen2.5-0.5B, n=60 pairs, layer 18 chosen by held-out sweep AUROC 0.78): false-vs-true facts persona AUROC 0.507 vs
+tf_gap 0.998; insecure-vs-secure code persona 0.503 vs tf_gap 0.508. The job was killed by the restart before stage `p3b`.
+
+### Remaining steps (all CPU, one job at a time)
+1. Resume `python scripts/persona_pilot.py --n 60` (skips sweep/facts/code; only `p3b` runs, ~10 min). Detached with setsid.
+2. After it finishes (no concurrent CPU work): run the FULL test suite, including the new file, and fix whatever fails. Expect some
+   first-run failures in the new tests (CLI `eval-em` with an adapter and the subprocess tests are untested paths).
+3. Write the persona and P3b results into `results/pilot_cpu.md` (replace the two "not interpretable" sections), state the RQ3
+   implication honestly: at 0.5B neither persona projection nor tf_gap separates insecure from secure code, and persona does not
+   separate false facts, so there is no baseline-beating claim to make yet.
+4. Refresh `PLAN.md` with a short status block; fix the pytest count in `RUNBOOK_LAPTOP.md` to the real number.
+5. Final verification: pytest, `gpu_selftest.py --device cpu --tiny`, `run_grid.py --dry-run`, CLI smokes; commit; push to main;
+   confirm the commit on GitHub; check that the workflow file was accepted by the push (drop it and say so if rejected).
+6. Final message: exact test counts, what was not run, and the stray `/st.json` file I created at the container root by mistake
+   (removal was blocked by a safety check; harmless, 1.7 KB, ephemeral container).
